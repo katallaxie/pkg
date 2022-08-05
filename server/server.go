@@ -108,8 +108,6 @@ func newServer(ctx context.Context, opts ...o.OptFunc) *server {
 	s.ready = make(chan bool, 1)
 	s.sys = make(chan os.Signal, 1)
 
-	configureSignals(s.opts, s.sys)
-
 	return s
 }
 
@@ -123,6 +121,19 @@ func (s *server) Wait() error {
 	// create ticker for interrupt signals
 	ticker := time.NewTicker(1 * time.Second)
 	defer ticker.Stop()
+
+	term, err := s.opts.Get(o.TermSignal)
+	if err != nil {
+		return err
+	}
+
+	kill, err := s.opts.Get(o.KillSignal)
+	if err != nil {
+		return err
+	}
+
+	signal.Notify(s.sys, term.(syscall.Signal), kill.(syscall.Signal))
+	defer signal.Reset(syscall.SIGINT, syscall.SIGTERM)
 
 OUTTER:
 	// start all listeners in order
@@ -221,11 +232,4 @@ func (s *server) done() {
 	}
 
 	s.wg.Done()
-}
-
-func configureSignals(opts o.Opts, s chan<- os.Signal) {
-	term, _ := opts.Get(o.TermSignal)
-	kill, _ := opts.Get(o.KillSignal)
-
-	signal.Notify(s, term.(syscall.Signal), kill.(syscall.Signal))
 }
