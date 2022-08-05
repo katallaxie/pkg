@@ -41,7 +41,6 @@ jobs:
         name: Check code
         uses: golangci/golangci-lint-action@v3
         with:
-          version: latest
           # skip cache because of flaky behaviors
           skip-build-cache: true
           skip-pkg-cache: true
