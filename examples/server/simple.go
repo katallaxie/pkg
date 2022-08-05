@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
@@ -25,6 +26,8 @@ func (s *srv) Start(ctx context.Context, ready server.ReadyFunc) func() error {
 			w.Write([]byte("welcome"))
 		})
 
+		time.Sleep(3 * time.Second)
+
 		ready()
 
 		s := http.Server{Addr: ":3000", Handler: chi.ServerBaseContext(ctx, r)}
@@ -42,19 +45,17 @@ func main() {
 	defer cancel()
 
 	s, _ := server.WithContext(ctx)
+	s.SetLimit(2)
 
+	s.Listen(&srv{}, true)
 	d := debug.New(
 		debug.WithPprof(),
-		debug.WithStatusAddr(":8443"),
+		debug.WithStatusAddr(":8888"),
 	)
 	s.Listen(d, false)
-	s.Listen(&srv{}, true)
 
-	err := s.Wait()
-
-	var e *server.Error
-	if errors.As(err, &e) {
-		fmt.Println(e.Err)
+	if err := s.Wait(); errors.Is(err, &server.Error{}) {
+		fmt.Println(err)
 		os.Exit(1)
 	}
 }

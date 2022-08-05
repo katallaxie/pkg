@@ -11,6 +11,7 @@ import (
 type Run struct {
 	wg  sync.WaitGroup
 	err *Error
+
 	sync.Mutex
 }
 

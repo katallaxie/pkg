@@ -12,6 +12,8 @@ import (
 	o "github.com/katallaxie/pkg/opts"
 )
 
+type token struct{}
+
 // ReadyFunc is the function that is called by Listener to signal
 // that it is ready and the next Listener can be called.
 type ReadyFunc func()
@@ -22,7 +24,7 @@ type Error struct {
 }
 
 // Error ...
-func (s *Error) Error() string { return fmt.Sprintf("server error: %s", s.Err) }
+func (s *Error) Error() string { return fmt.Sprintf("server: %s", s.Err) }
 
 // Unwrap ...
 func (s *Error) Unwrap() error { return s.Err }
@@ -47,6 +49,8 @@ type Server interface {
 	// Waits for the server to fail,
 	// or gracefully shutdown if context is canceled
 	Wait() error
+	// SetLimit ...
+	SetLimit(n int)
 }
 
 // Listener is the interface to a listener,
@@ -67,6 +71,8 @@ type server struct {
 	wg      sync.WaitGroup
 	errOnce sync.Once
 	err     error
+
+	sem chan token
 
 	listeners map[Listener]bool
 
@@ -99,21 +105,16 @@ func newServer(ctx context.Context, opts ...o.OptFunc) *server {
 	s.ctx = ctx
 
 	s.listeners = make(listeners)
-	s.ready = make(chan bool)
+	s.ready = make(chan bool, 1)
+	s.sys = make(chan os.Signal, 1)
 
-	configureSignals(s)
+	configureSignals(s.opts, s.sys)
 
 	return s
 }
 
 // Listen ...
 func (s *server) Listen(listener Listener, ready bool) {
-	// if we found the listener already, we simply reject to be added
-	if _, found := s.listeners[listener]; found {
-		return
-	}
-
-	// add to listeners
 	s.listeners[listener] = ready
 }
 
@@ -138,13 +139,16 @@ OUTTER:
 		}
 
 		// schedule to routines
-		s.run(l.Start(s.ctx, fn))
+		_ = s.run(l.Start(s.ctx, fn))
 
 		// this blocks until ready is called
 		if ready {
 			select {
 			case <-s.ready:
 				continue
+			case <-s.sys:
+				s.cancel()
+				break OUTTER
 			case <-s.ctx.Done():
 				break OUTTER
 			}
@@ -169,11 +173,32 @@ OUTTER:
 	}
 }
 
-func (s *server) run(f func() error) {
-	s.wg.Add(1)
+// SetLimit limits the number of active listeners in this server
+func (s *server) SetLimit(n int) {
+	if n < 0 {
+		s.sem = nil
+		return
+	}
 
+	if len(s.sem) != 0 {
+		panic(fmt.Errorf("server: modify limit while %v listeners run", len(s.sem)))
+	}
+
+	s.sem = make(chan token, n)
+}
+
+func (s *server) run(f func() error) error {
+	if s.sem != nil {
+		select {
+		case s.sem <- token{}:
+		default:
+			return fmt.Errorf("server: start more then %v listeners", len(s.sem))
+		}
+	}
+
+	s.wg.Add(1)
 	fn := func() {
-		defer s.wg.Done()
+		defer s.done()
 
 		if err := f(); err != nil {
 			s.errOnce.Do(func() {
@@ -186,11 +211,21 @@ func (s *server) run(f func() error) {
 	}
 
 	go fn()
+
+	return nil
 }
 
-func configureSignals(s *server) {
-	s.sys = make(chan os.Signal, 1)
-	term, _ := s.opts.Get(o.TermSignal)
+func (s *server) done() {
+	if s.sem != nil {
+		<-s.sem
+	}
 
-	signal.Notify(s.sys, term.(syscall.Signal))
+	s.wg.Done()
+}
+
+func configureSignals(opts o.Opts, s chan<- os.Signal) {
+	term, _ := opts.Get(o.TermSignal)
+	kill, _ := opts.Get(o.KillSignal)
+
+	signal.Notify(s, term.(syscall.Signal), kill.(syscall.Signal))
 }
