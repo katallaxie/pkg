@@ -1,7 +1,6 @@
 package files_test
 
 import (
-	"io/ioutil"
 	"os"
 	"os/user"
 	"path/filepath"
@@ -35,7 +34,7 @@ func TestCopyFile(t *testing.T) {
 
 	assert.Equal(t, oldBytes, int(newBytes))
 
-	b, err := ioutil.ReadFile(new)
+	b, err := os.ReadFile(new)
 	assert.NoError(t, err)
 
 	assert.Equal(t, "Hello World", string(b))
@@ -67,7 +66,7 @@ func TestCopyFileHomeDir(t *testing.T) {
 
 	assert.Equal(t, oldBytes, int(newBytes))
 
-	b, err := ioutil.ReadFile(new)
+	b, err := os.ReadFile(new)
 	assert.NoError(t, err)
 
 	assert.Equal(t, "Hello World", string(b))
@@ -95,7 +94,7 @@ func TestCopyFileMkdir(t *testing.T) {
 
 	assert.Equal(t, oldBytes, int(newBytes))
 
-	b, err := ioutil.ReadFile(new)
+	b, err := os.ReadFile(new)
 	assert.NoError(t, err)
 
 	assert.Equal(t, "Hello World", string(b))
