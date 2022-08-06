@@ -18,6 +18,7 @@ You can find the documentation hosted on [godoc.org](https://godoc.org/github.co
 * [Opts](https://github.com/katallaxie/pkg/tree/main/opts): Create options
 * [Server](https://github.com/katallaxie/pkg/tree/main/server): Create servers
 * [Debug](https://github.com/katallaxie/pkg/tree/main/debug): Add debugging
+* [Logger](https://github.com/katallaxie/pkg/tree/main/logger): Logging
 * [URN](https://github.com/katallaxie/pkg/tree/main/urn): Add uniform resource name(s) (URNs)
 * [Utils](https://github.com/katallaxie/pkg/tree/main/utils): Small helper functions
 
