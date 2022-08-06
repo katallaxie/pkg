@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"time"
@@ -16,6 +17,7 @@ import (
 )
 
 type srv struct {
+	server.Service
 }
 
 func (s *srv) Start(ctx context.Context, ready server.ReadyFunc) func() error {
@@ -47,6 +49,8 @@ func main() {
 	s, _ := server.WithContext(ctx)
 	s.SetLimit(2)
 
+	service := &srv{}
+
 	s.Listen(&srv{}, true)
 	d := debug.New(
 		debug.WithPprof(),
@@ -54,6 +58,7 @@ func main() {
 	)
 	s.Listen(d, false)
 
+	log.Printf("starting %s", service.Lookup(server.ServiceEnv{}))
 	if err := s.Wait(); errors.Is(err, &server.Error{}) {
 		fmt.Println(err)
 		os.Exit(1)

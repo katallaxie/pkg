@@ -46,9 +46,11 @@ func NewError(err error) *Error {
 type Server interface {
 	// Run is running a new go routine
 	Listen(listener Listener, ready bool)
+
 	// Waits for the server to fail,
 	// or gracefully shutdown if context is canceled
 	Wait() error
+
 	// SetLimit ...
 	SetLimit(n int)
 }
