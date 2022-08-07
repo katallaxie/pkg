@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package snowflake;
+
+option go_package = "github.com/katallaxie/pkg/snowflake";
+
+message Snowflake {
+  int64 id = 1;
+}
