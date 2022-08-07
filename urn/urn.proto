@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package urn;
+package katallaxie.protobuf;
 
 option go_package = "github.com/katallaxie/pkg/urn";
 
