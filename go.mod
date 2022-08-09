@@ -9,7 +9,7 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.8
 	github.com/stretchr/testify v1.8.0
 	github.com/syndtr/goleveldb v1.0.0
-	go.uber.org/zap v1.21.0
+	go.uber.org/zap v1.22.0
 	google.golang.org/protobuf v1.28.1
 )
 
