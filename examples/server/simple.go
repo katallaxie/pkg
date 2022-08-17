@@ -20,7 +20,7 @@ type srv struct {
 	server.Service
 }
 
-func (s *srv) Start(ctx context.Context, ready server.ReadyFunc) func() error {
+func (s *srv) Start(ctx context.Context, ready server.ReadyFunc, run server.RunFunc) func() error {
 	return func() error {
 		r := chi.NewRouter()
 		r.Use(middleware.Logger)
@@ -29,6 +29,20 @@ func (s *srv) Start(ctx context.Context, ready server.ReadyFunc) func() error {
 		})
 
 		time.Sleep(3 * time.Second)
+
+		run(func() error {
+			ticker := time.NewTicker(1 * time.Second)
+
+			for {
+				select {
+				case <-ticker.C:
+					log.Print(time.Now())
+				case <-ctx.Done():
+					ticker.Stop()
+					return nil
+				}
+			}
+		})
 
 		ready()
 

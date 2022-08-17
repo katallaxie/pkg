@@ -86,7 +86,7 @@ func New(opts ...o.OptFunc) server.Listener {
 }
 
 // Start ...
-func (d *debug) Start(ctx context.Context, ready server.ReadyFunc) func() error {
+func (d *debug) Start(ctx context.Context, ready server.ReadyFunc, run server.RunFunc) func() error {
 	return func() error {
 		// noop, call to be ready
 		ready()

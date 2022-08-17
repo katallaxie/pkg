@@ -18,6 +18,10 @@ type token struct{}
 // that it is ready and the next Listener can be called.
 type ReadyFunc func()
 
+// RunFunc is a function that is called to attach more routines
+// to the server.
+type RunFunc func(func() error)
+
 // Error ...
 type Error struct {
 	Err error
@@ -60,7 +64,7 @@ type Server interface {
 // or any routine.
 type Listener interface {
 	// Start is being called on the listener
-	Start(context.Context, ReadyFunc) func() error
+	Start(context.Context, ReadyFunc, RunFunc) func() error
 }
 
 type listeners map[Listener]bool
@@ -151,8 +155,10 @@ OUTTER:
 			})
 		}
 
+		goFn := func(f func() error) { _ = s.run(f) }
+
 		// schedule to routines
-		_ = s.run(l.Start(s.ctx, fn))
+		_ = s.run(l.Start(s.ctx, fn, goFn))
 
 		// this blocks until ready is called
 		if ready {
