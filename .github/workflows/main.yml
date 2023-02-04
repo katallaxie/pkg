@@ -20,6 +20,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+      - uses: arduino/setup-protoc@v1
       - uses: actions/setup-go@v3
         with:
           go-version: ${{ matrix.go }}
