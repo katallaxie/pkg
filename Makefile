@@ -3,7 +3,7 @@
 GO_TEST = go run gotest.tools/gotestsum --format pkgname
 
 .PHONY: generate
-generate: ## Generate code.
+generate: install ## Generate code.
 	go generate ./...
 
 .PHONY: install
