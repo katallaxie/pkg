@@ -23,7 +23,7 @@ func CopyFile(src, dst string, mkdir bool) (int64, error) {
 	}
 
 	if mkdir {
-		err = MkdirAll(filepath.Dir(dst), 0755)
+		err = MkdirAll(filepath.Dir(dst), 0o755)
 		if err != nil {
 			return 0, err
 		}

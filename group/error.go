@@ -24,7 +24,6 @@ func (e *Error) Error() string {
 	return fmt.Sprintf(
 		"%d errors occurred:\n\t%s\n\n",
 		len(e.errs), strings.Join(ee, "\n\t"))
-
 }
 
 // Append ...

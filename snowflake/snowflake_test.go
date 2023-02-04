@@ -7,7 +7,6 @@ import (
 )
 
 func TestNew(t *testing.T) {
-
 	_, err := New(0)
 	assert.NoError(t, err)
 

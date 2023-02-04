@@ -16,7 +16,7 @@ func TestMkdirAll(t *testing.T) {
 
 	path := strings.Join([]string{tempDir, "example"}, "/")
 
-	err = MkdirAll(path, 0755)
+	err = MkdirAll(path, 0o755)
 	assert.NoError(t, err)
 
 	_, err = os.Stat(path)

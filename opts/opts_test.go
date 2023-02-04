@@ -8,7 +8,7 @@ import (
 )
 
 func TestConfig_NewDefaultOpts(t *testing.T) {
-	var cond = []struct {
+	cond := []struct {
 		desc string
 		in   Opt
 		out  interface{}

@@ -24,11 +24,10 @@ var (
 // in the message. This can be the case in transitioning to use
 // the URN.proto and not yet fully publish everything.
 //
-// 	urn := req.GetUrn()
-// 	if err := urn.Validate(); err != nil{
+//	urn := req.GetUrn()
+//	if err := urn.Validate(); err != nil{
 //		return err
 //	}
-//
 func (r *ResourceURN) Validate(validateFuncs ...ValidateFunc) error {
 	canonical := r.GetCanonical()
 	if canonical == "" {

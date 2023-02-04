@@ -41,7 +41,7 @@ func NewError(err error) *Error {
 // Server is the interface to be implemented
 // to run the server.
 //
-// 	s, ctx := WithContext(context.Background())
+//	s, ctx := WithContext(context.Background())
 //	s.Listen(listener, false)
 //
 //	if err := s.Wait(); err != nil {
@@ -58,6 +58,18 @@ type Server interface {
 	// SetLimit ...
 	SetLimit(n int)
 }
+
+// Unimplemented is the default implementation.
+type Unimplemented struct{}
+
+// Listen ...
+func (s *Unimplemented) Listen(listener Listener, ready bool) {}
+
+// Wait ...
+func (s *Unimplemented) Wait() error { return nil }
+
+// SetLimit ...
+func (s *Unimplemented) SetLimit(n int) {}
 
 // Listener is the interface to a listener,
 // so starting and shutdown of a listener,

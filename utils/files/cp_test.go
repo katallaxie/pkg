@@ -104,7 +104,7 @@ func TestPrependHomeFolder(t *testing.T) {
 	sr, err := user.Current()
 	assert.NoError(t, err)
 
-	var tests = []struct {
+	tests := []struct {
 		desc        string
 		path        string
 		expected    string

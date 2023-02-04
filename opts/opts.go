@@ -19,10 +19,8 @@ const (
 	DefaultKillSignal = syscall.SIGINT
 )
 
-var (
-	// ErrNotFound signals that this option is not set.
-	ErrNotFound = fmt.Errorf("option not found")
-)
+// ErrNotFound signals that this option is not set.
+var ErrNotFound = fmt.Errorf("option not found")
 
 // Opt ...
 type Opt int
@@ -143,7 +141,6 @@ func (o *Options) Get(opt Opt) (interface{}, error) {
 	v, ok := o.opts[opt]
 	if !ok {
 		return nil, ErrNotFound
-
 	}
 
 	return v, nil

@@ -18,7 +18,6 @@ func withSqlite(t *testing.T, fn func(t *testing.T, db *sqlx.DB)) func(t *testin
 
 	t.Cleanup(func() {
 		err := db.Close()
-
 		if err != nil {
 			t.Errorf("Close() err = %v; want nil", err)
 		}

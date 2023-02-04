@@ -9,7 +9,7 @@ import (
 )
 
 func TestContains(t *testing.T) {
-	var tests = []struct {
+	tests := []struct {
 		in       []string
 		test     string
 		expected bool

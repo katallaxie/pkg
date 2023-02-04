@@ -36,7 +36,7 @@ func Open(path string, o *opt.Options) (*Store, error) {
 		return nil, err
 	}
 
-	var store = new(Store)
+	store := new(Store)
 	store.db = db
 
 	return store, err
@@ -53,16 +53,16 @@ func Open(path string, o *opt.Options) (*Store, error) {
 //		if err := s.Get(store.Byte("key42"), &val); err == store.ErrKeyNotExist {
 //	    	// "key42" not found
 //		}
-// 		if err != nil {
+//		if err != nil {
 //			// some other error occurred
 //		}
 //
 // The value passed to Get() can be nil. Which gives you the same result as
 // Exist().
 //
-//  	if err := s.Get(store.Byte("key42"), nil); err == nil {
-//      	fmt.Println("entry is present")
-//  	}
+//		if err := s.Get(store.Byte("key42"), nil); err == nil {
+//	    	fmt.Println("entry is present")
+//		}
 func (s *Store) Get(key []byte, value interface{}) error {
 	var err error
 
@@ -79,13 +79,13 @@ func (s *Store) Get(key []byte, value interface{}) error {
 // value for the given key. The passed value is gob-encoded and stored.
 // The value cannot be nil and Put() returns an ErrBadValue.
 //
-// 		err := s.Put(store.Byte("key42"), 42)
-// 		err := s.Put(store.Byte("key42"), "the question to live and the universe.")
-// 		m := map[string]int{
-//			"foo": 0,
-//			"bar": 1
-//		}
-//		err := s.Put(store.Byte("key42"), m)
+//	err := s.Put(store.Byte("key42"), 42)
+//	err := s.Put(store.Byte("key42"), "the question to live and the universe.")
+//	m := map[string]int{
+//		"foo": 0,
+//		"bar": 1
+//	}
+//	err := s.Put(store.Byte("key42"), m)
 func (s *Store) Put(key []byte, value interface{}) error {
 	var err error
 
@@ -104,7 +104,7 @@ func (s *Store) Put(key []byte, value interface{}) error {
 // Delete an entry of a given key from the store.
 // If no such key is present in the store it will not return an error.
 //
-// 		s.Delete(store.Byte("key42"))
+//	s.Delete(store.Byte("key42"))
 func (s *Store) Delete(key []byte) error {
 	return s.db.Delete(key, nil)
 }
