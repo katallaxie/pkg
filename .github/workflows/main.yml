@@ -12,7 +12,7 @@ on:
       - main
 
 jobs:
-  lint:
+  test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -30,9 +30,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go-
       - run: make generate
-      - run: make lint
+      - run: make test
 
-  test:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
