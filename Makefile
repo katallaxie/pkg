@@ -1,6 +1,8 @@
 .DEFAULT_GOAL := build
 
-GO_TEST = go run gotest.tools/gotestsum --format pkgname
+GO ?= go
+GO_RUN_TOOLS ?= $(GO) run -modfile ./tools/go.mod
+GO_TEST = $(GO_RUN_TOOLS) gotest.tools/gotestsum --format pkgname
 
 .PHONY: generate
 generate: install ## Generate code.
@@ -26,6 +28,7 @@ test: generate fmt ## Run tests.
 
 .PHONY: lint
 lint: ## Run golangci-lint against code.
+	$(GO_RUN_TOOLS) github.com/golangci/golangci-lint/cmd/golangci-lint run -c .golangci.yml
 	go run github.com/golangci/golangci-lint/cmd/golangci-lint run --timeout 2m
 
 .PHONY: clean

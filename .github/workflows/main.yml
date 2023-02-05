@@ -12,6 +12,26 @@ on:
       - main
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go: [ 1.20.x, 1.19.x, 1.18.x]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: arduino/setup-protoc@v1
+      - uses: actions/setup-go@v3
+        with:
+          go-version: ${{ matrix.go }}
+      - uses: actions/cache@v3
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+      - run: make generate
+      - run: make lint
+
   test:
     runs-on: ubuntu-latest
     strategy:
@@ -30,10 +50,5 @@ jobs:
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-go-
-      - uses: golangci/golangci-lint-action@v3
-        with:
-          version: latest
-          # skip cache because of flaky behaviors
-          skip-build-cache: true
-          skip-pkg-cache: true
+      - run: make generate
       - run: make test
