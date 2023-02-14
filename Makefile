@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := build
 
 GO ?= go
-GO_RUN_TOOLS ?= $(GO) run -modfile ./tools/go.mod
+GO_RUN_TOOLS ?= $(GO) run -modfile ./internal/tools/go.mod
 GO_TEST = $(GO_RUN_TOOLS) gotest.tools/gotestsum --format pkgname
 
 .PHONY: generate
@@ -15,14 +15,14 @@ install: ## Install tools.
 
 .PHONY: fmt
 fmt: ## Run go fmt against code.
-	go run mvdan.cc/gofumpt -w .
+	$(GO_RUN_TOOLS) mvdan.cc/gofumpt -w .
 
 .PHONY: vet
 vet: ## Run go vet against code.
 	go vet ./...
 
 .PHONY: test
-test: generate fmt ## Run tests.
+test: generate fmt vet ## Run tests.
 	mkdir -p .test/reports
 	$(GO_TEST) --junitfile .test/reports/unit-test.xml -- -race ./... -count=1 -short -cover -coverprofile .test/reports/unit-test-coverage.out
 
