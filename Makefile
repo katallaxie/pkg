@@ -28,8 +28,7 @@ test: generate fmt ## Run tests.
 
 .PHONY: lint
 lint: ## Run golangci-lint against code.
-	$(GO_RUN_TOOLS) github.com/golangci/golangci-lint/cmd/golangci-lint run -c .golangci.yml
-	go run github.com/golangci/golangci-lint/cmd/golangci-lint run --timeout 2m
+	$(GO_RUN_TOOLS) github.com/golangci/golangci-lint/cmd/golangci-lint run --timeout 5m -c .golangci.yml
 
 .PHONY: clean
 clean: ## Remove previous build.
