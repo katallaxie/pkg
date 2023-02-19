@@ -6,6 +6,25 @@ import (
 	"go.uber.org/zap"
 )
 
+var (
+	// LogSink is the logger sink.
+	LogSink *zap.Logger
+)
+
+func init() {
+	l, err := NewLogSink()
+	if err != nil {
+		panic(err)
+	}
+
+	LogSink = l
+}
+
+// NewLogSink ...
+func NewLogSink() (*zap.Logger, error) {
+	return zap.NewProduction()
+}
+
 // Logger represents a standard logging interface.
 type Logger interface {
 	// Log a notice statement
