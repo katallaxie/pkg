@@ -6,10 +6,8 @@ import (
 	"go.uber.org/zap"
 )
 
-var (
-	// LogSink is the logger sink.
-	LogSink *zap.Logger
-)
+// LogSink is the logger sink.
+var LogSink *zap.Logger
 
 func init() {
 	l, err := NewLogSink()
