@@ -1,4 +1,4 @@
-module github.com/katallaxie/pkg/tools
+module github.com/katallaxie/pkg/internal/tools
 
 go 1.19
 

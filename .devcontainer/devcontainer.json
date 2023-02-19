@@ -1,19 +1,17 @@
 {
-    "name": "katallaxie/pkg",
-    "image": "mcr.microsoft.com/vscode/devcontainers/go:latest",
-    "postCreateCommand": "bash scripts/postCreateCommand.sh",
-    "forwardPorts": [
-        8080
-    ],
-    "appPort": [
-        8080
-    ],
-    "portsAttributes": {
-        "8080": {
-            "label": "web"
+    "name": "ionos-cloud/streams",
+    "build": {
+        "dockerfile": "Dockerfile",
+        // Update 'VARIANT' to pick an Ubuntu version: jammy / ubuntu-22.04, focal / ubuntu-20.04, bionic /ubuntu-18.04
+        // Use ubuntu-22.04 or ubuntu-18.04 on local arm64/Apple Silicon.
+        "args": {
+            "VARIANT": "ubuntu-22.04"
         }
     },
-    "extensions": [
-        "golang.Go"
-    ]
+    "postStartCommand": "git config --global --add safe.directory ${containerWorkspaceFolder}",
+    "postCreateCommand": "bash scripts/postCreateCommand.sh",
+    "features": {
+        "golang": "latest"
+    },
+    "remoteUser": "vscode"
 }
