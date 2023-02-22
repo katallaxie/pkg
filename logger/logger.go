@@ -46,50 +46,50 @@ type Logger interface {
 
 var _ Logger = (*logger)(nil)
 
-// LoggerFunc is a bridge between Logger and any third party logger.
-type LoggerFunc func(string, ...interface{})
+// LogFunc is a bridge between Logger and any third party logger.
+type LogFunc func(string, ...interface{})
 
 // Printf is a bridge between Logger and any third party logger.
-func (f LoggerFunc) Printf(msg string, args ...interface{}) { f(msg, args...) }
+func (f LogFunc) Printf(msg string, args ...interface{}) { f(msg, args...) }
 
 // Debugf is a bridge between Logger and any third party logger.
-func (f LoggerFunc) Debugf(msg string, args ...interface{}) { f(msg, args...) }
+func (f LogFunc) Debugf(msg string, args ...interface{}) { f(msg, args...) }
 
 // Infof is a bridge between Logger and any third party logger.
-func (f LoggerFunc) Infof(msg string, args ...interface{}) { f(msg, args...) }
+func (f LogFunc) Infof(msg string, args ...interface{}) { f(msg, args...) }
 
 // Errorf is a bridge between Logger and any third party logger.
-func (f LoggerFunc) Errorf(msg string, args ...interface{}) { f(msg, args...) }
+func (f LogFunc) Errorf(msg string, args ...interface{}) { f(msg, args...) }
 
 // Warnf is a bridge between Logger and any third party logger.
-func (f LoggerFunc) Warnf(msg string, args ...interface{}) { f(msg, args...) }
+func (f LogFunc) Warnf(msg string, args ...interface{}) { f(msg, args...) }
 
 // Panicf is a bridge between Logger and any third party logger.
-func (f LoggerFunc) Panicf(msg string, args ...interface{}) { f(msg, args...) }
+func (f LogFunc) Panicf(msg string, args ...interface{}) { f(msg, args...) }
 
 // Fatalf is a bridge between Logger and any third party logger.
-func (f LoggerFunc) Fatalf(msg string, args ...interface{}) { f(msg, args...) }
+func (f LogFunc) Fatalf(msg string, args ...interface{}) { f(msg, args...) }
 
 // Debugw is a bridge between Logger and any third party logger.
-func (f LoggerFunc) Debugw(msg string, args ...interface{}) { f(msg, args...) }
+func (f LogFunc) Debugw(msg string, args ...interface{}) { f(msg, args...) }
 
 // Infow is a bridge between Logger and any third party logger.
-func (f LoggerFunc) Infow(msg string, args ...interface{}) { f(msg, args...) }
+func (f LogFunc) Infow(msg string, args ...interface{}) { f(msg, args...) }
 
 // Warnw is a bridge between Logger and any third party logger.
-func (f LoggerFunc) Warnw(msg string, args ...interface{}) { f(msg, args...) }
+func (f LogFunc) Warnw(msg string, args ...interface{}) { f(msg, args...) }
 
 // Errorw is a bridge between Logger and any third party logger.
-func (f LoggerFunc) Errorw(msg string, args ...interface{}) { f(msg, args...) }
+func (f LogFunc) Errorw(msg string, args ...interface{}) { f(msg, args...) }
 
 // DPanicw is a bridge between Logger and any third party logger.
-func (f LoggerFunc) DPanicw(msg string, args ...interface{}) { f(msg, args...) }
+func (f LogFunc) DPanicw(msg string, args ...interface{}) { f(msg, args...) }
 
 // Panicw is a bridge between Logger and any third party logger.
-func (f LoggerFunc) Panicw(msg string, args ...interface{}) { f(msg, args...) }
+func (f LogFunc) Panicw(msg string, args ...interface{}) { f(msg, args...) }
 
-// Fatalw ...
-func (f LoggerFunc) Fatalw(msg string, args ...interface{}) { f(msg, args...) }
+// Fatalw is a bridge between Logger and any third party logger.
+func (f LogFunc) Fatalw(msg string, args ...interface{}) { f(msg, args...) }
 
 type logger struct {
 	opts *Opts
