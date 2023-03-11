@@ -6,7 +6,7 @@
 [![Volkswagen](https://auchenberg.github.io/volkswagen/volkswargen_ci.svg?v=1)](https://github.com/auchenberg/volkswagen)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-A collection of Go primitives used in some of ours applications.
+A collection of Go primitives used in most of my projects.
 
 ## Docs
 
