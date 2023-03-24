@@ -9,7 +9,7 @@ import (
 
 const (
 	// Separator is the separator used to separate the segments of a URN.
-	Seperator = ":"
+	Separator = ":"
 )
 
 // ErrorInvalid is returned when parsing an URN with an invalid format.
@@ -35,7 +35,12 @@ type URN struct {
 
 // String returns the string representation of the URN.
 func (u *URN) String() string {
-	return strings.Join([]string{u.Namespace, u.Partition, u.Service, u.Region, u.Identifier, u.Resource}, Seperator)
+	return strings.Join([]string{u.Namespace, u.Partition, u.Service, u.Region, u.Identifier, u.Resource}, Separator)
+}
+
+// Match returns true if the URN matches the given URN.
+func (u *URN) Match(urn *URN) bool {
+	return u.String() == urn.String()
 }
 
 // New takes a namespace, partition, service, region, identifier and resource and returns a URN.
@@ -60,7 +65,7 @@ func New(namespace, partition, service, region, identifier, resource string) (*U
 
 // Parse takes a string and parses it to a URN.
 func Parse(s string) (*URN, error) {
-	segments := strings.SplitN(s, Seperator, 6)
+	segments := strings.SplitN(s, Separator, 6)
 	if len(segments) < 5 {
 		return nil, ErrorInvalid
 	}
