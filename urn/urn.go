@@ -38,6 +38,11 @@ func (u *URN) String() string {
 	return strings.Join([]string{u.Namespace, u.Partition, u.Service, u.Region, u.Identifier, u.Resource}, Seperator)
 }
 
+// Match returns true if the URN matches the given URN.
+func (u *URN) Match(urn *URN) bool {
+	return u.String() == urn.String()
+}
+
 // New takes a namespace, partition, service, region, identifier and resource and returns a URN.
 func New(namespace, partition, service, region, identifier, resource string) (*URN, error) {
 	urn := &URN{
