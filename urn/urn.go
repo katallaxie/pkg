@@ -2,103 +2,82 @@ package urn
 
 import (
 	"errors"
-	"regexp"
 	"strings"
+
+	"github.com/go-playground/validator/v10"
 )
 
-var (
-	// ErrorInvalid is returned when parsing an URN with an
-	// invalid format.
-	ErrorInvalid = errors.New("invalid URN format")
-
-	segmentFormat = `[a-zA-Z0-9-_~\.]{1,256}`
-	urnRegexp     = regexp.MustCompile(`^(` + segmentFormat + `):(` + segmentFormat + `):(` + segmentFormat + `):(` + segmentFormat + `)$`)
+const (
+	// Separator is the separator used to separate the segments of a URN.
+	Seperator = ":"
 )
 
-// ValidateFunc is a function to validate a URN.
-type ValidateFunc func(*URN) error
+// ErrorInvalid is returned when parsing an URN with an invalid format.
+var ErrorInvalid = errors.New("invalid URN format")
+
+var validate = validator.New()
 
 // URN represents a unique, uniform identifier for a resource
 type URN struct {
-	// namespace is the namespace segment of the URN.
-	namespace string
-	// collection is the collection segment of the URN.
-	collection string
-	// identifier is the identifier segment of the URN.
-	identifier string
-	// resource is the resource segment of the URN.
-	resource string
-}
-
-// Namespace returns the namespace segment of the URN.
-func (u *URN) Namespace() string {
-	return u.namespace
-}
-
-// Collection returns the collection segment of the URN.
-func (u *URN) Collection() string {
-	return u.collection
-}
-
-// Identifier returns the identifier segment of the URN.
-func (u *URN) Identifier() string {
-	return u.identifier
-}
-
-// Resource returns the resource segment of the URN.
-func (u *URN) Resource() string {
-	return u.resource
+	// Namespace is the namespace segment of the URN.
+	Namespace string `validate:"required"`
+	// Partition is the partition segment of the URN.
+	Partition string `validate:"max=256"`
+	// Service is the service segment of the URN.
+	Service string `validate:"max=256"`
+	// Region is the region segment of the URN.
+	Region string `validate:"max=256"`
+	// Identifier is the identifier segment of the URN.
+	Identifier string `validate:"max=64"`
+	// Resource is the resource segment of the URN.
+	Resource string `validate:"required,max=256"`
 }
 
 // String returns the string representation of the URN.
 func (u *URN) String() string {
-	return strings.Join([]string{u.namespace, u.collection, u.identifier, u.resource}, ":")
+	return strings.Join([]string{u.Namespace, u.Partition, u.Service, u.Region, u.Identifier, u.Resource}, Seperator)
 }
 
-// ValidateNamespace is a function to validate that the namespace is not empty.
-func ValidateNamespace() ValidateFunc {
-	return func(u *URN) error {
-		if u.namespace == "" {
-			return ErrorInvalid
-		}
-
-		return nil
-	}
-}
-
-// New takes a Collection, an identifier, a resource and an optional list of
-// options, and returns a URN. It may return a non-nil error if namespace, coll or identifier
-// contain invalid values (e.g. an empty namespace, an unknown
-// collection, etc).
-func New(namespace, collection, identifier, resource string, validateFunc ...ValidateFunc) (*URN, error) {
+// New takes a namespace, partition, service, region, identifier and resource and returns a URN.
+func New(namespace, partition, service, region, identifier, resource string) (*URN, error) {
 	urn := &URN{
-		namespace:  namespace,
-		collection: collection,
-		identifier: identifier,
-		resource:   resource,
+		Namespace:  namespace,
+		Partition:  partition,
+		Service:    service,
+		Region:     region,
+		Identifier: identifier,
+		Resource:   resource,
 	}
 
-	for _, fn := range validateFunc {
-		if err := fn(urn); err != nil {
-			return nil, err
-		}
+	validate = validator.New()
+
+	if err := validate.Struct(urn); err != nil {
+		return nil, err
 	}
 
 	return urn, nil
 }
 
 // Parse takes a string and parses it to a URN.
-func Parse(s string, validateFunc ...ValidateFunc) (*URN, error) {
-	segments := urnRegexp.FindStringSubmatch(s)
-	if len(segments) < 5 { // the first element is the full canonical string
+func Parse(s string) (*URN, error) {
+	segments := strings.SplitN(s, Seperator, 6)
+	if len(segments) < 5 {
 		return nil, ErrorInvalid
 	}
 
 	urn := &URN{
-		namespace:  segments[1],
-		collection: segments[2],
-		identifier: segments[3],
-		resource:   segments[4],
+		Namespace:  segments[0],
+		Partition:  segments[1],
+		Service:    segments[2],
+		Region:     segments[3],
+		Identifier: segments[4],
+		Resource:   segments[5],
+	}
+
+	validate = validator.New()
+
+	if err := validate.Struct(urn); err != nil {
+		return nil, err
 	}
 
 	return urn, nil
@@ -108,19 +87,16 @@ func Parse(s string, validateFunc ...ValidateFunc) (*URN, error) {
 func (u *URN) ProtoMessage() *ResourceURN {
 	return &ResourceURN{
 		Canonical:  u.String(),
-		Namespace:  u.Namespace(),
-		Collection: u.Collection(),
-		Identifier: u.Identifier(),
-		Resource:   u.Resource(),
+		Namespace:  u.Namespace,
+		Partition:  u.Partition,
+		Service:    u.Service,
+		Region:     u.Region,
+		Identifier: u.Identifier,
+		Resource:   u.Resource,
 	}
 }
 
 // FromProto returns the URN representation from a proto.ResourceURN representation.
-func FromProto(r *ResourceURN, validateFunc ...ValidateFunc) (*URN, error) {
-	return &URN{
-		namespace:  r.Namespace,
-		collection: r.Collection,
-		identifier: r.Identifier,
-		resource:   r.Resource,
-	}, nil
+func FromProto(r *ResourceURN) (*URN, error) {
+	return New(r.Namespace, r.Partition, r.Service, r.Region, r.Identifier, r.Resource)
 }

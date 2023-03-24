@@ -9,15 +9,21 @@ message ResourceURN {
   // canonical means the full representation of the URN
   string canonical    = 1;
 
-  // namespace is the name prefix to space various URN types
+  // namespace is the namespace name, which reflects a collection
   string namespace    = 2;
 
-  // collection is the service space, which reflects a resource
-  string collection   = 3;
+  // partition is the partition name, which reflects a collection
+  string partition    = 3;
+
+  // service is the service name, which reflects a collection
+  string service      = 4;
+
+  // region is the service region, which reflects a collection
+  string region       = 5;
 
   // identifier is the identifier of the resource within a collection
-  string identifier   = 4;
+  string identifier   = 6;
 
   // resource can be an associated resource of the URN
-  string resource     = 5;
+  string resource     = 7;
 }
