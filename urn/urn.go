@@ -12,6 +12,16 @@ const (
 	Separator = ":"
 )
 
+// Match ...
+type Match string
+
+var (
+	// Wildcard is the wildcard used to match any value.
+	Wildcard Match = "*"
+	// Empty is the empty string
+	Empty Match = ""
+)
+
 // ErrorInvalid is returned when parsing an URN with an invalid format.
 var ErrorInvalid = errors.New("invalid URN format")
 
@@ -40,7 +50,22 @@ func (u *URN) String() string {
 
 // Match returns true if the URN matches the given URN.
 func (u *URN) Match(urn *URN) bool {
-	return u.String() == urn.String()
+	return u.Namespace == urn.Namespace &&
+		(u.Partition == urn.Partition || Match(u.Partition) == Wildcard || Match(urn.Partition) == Wildcard || Match(u.Partition) == Empty || Match(urn.Partition) == Empty) &&
+		(u.Service == urn.Service || Match(u.Service) == Wildcard || Match(urn.Service) == Wildcard || Match(u.Service) == Empty || Match(urn.Service) == Empty) &&
+		(u.Region == urn.Region || Match(u.Region) == Wildcard || Match(urn.Region) == Wildcard || Match(u.Region) == Empty || Match(urn.Region) == Empty) &&
+		(u.Identifier == urn.Identifier || Match(u.Identifier) == Wildcard || Match(urn.Identifier) == Wildcard || Match(u.Identifier) == Empty || Match(urn.Identifier) == Empty) &&
+		(u.Resource == urn.Resource || Match(u.Resource) == Wildcard || Match(urn.Resource) == Wildcard || Match(u.Resource) == Empty || Match(urn.Resource) == Empty)
+}
+
+// ExactMatch returns true if the URN matches the given URN exactly.
+func (u *URN) ExactMatch(urn *URN) bool {
+	return u.Namespace == urn.Namespace &&
+		u.Partition == urn.Partition &&
+		u.Service == urn.Service &&
+		u.Region == urn.Region &&
+		u.Identifier == urn.Identifier &&
+		u.Resource == urn.Resource
 }
 
 // New takes a namespace, partition, service, region, identifier and resource and returns a URN.

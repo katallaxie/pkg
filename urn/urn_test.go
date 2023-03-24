@@ -49,6 +49,82 @@ func TestNew(t *testing.T) {
 	}
 }
 
+func TestMatch(t *testing.T) {
+	tests := []struct {
+		desc     string
+		urn      *URN
+		other    *URN
+		expected bool
+	}{
+		{
+			desc: "returns true when the URNs are equal",
+			urn: &URN{
+				Namespace:  "urn",
+				Partition:  "cloud",
+				Service:    "machine",
+				Region:     "eu-central-1",
+				Identifier: "1234567890",
+				Resource:   "ulysses",
+			},
+			other: &URN{
+				Namespace:  "urn",
+				Partition:  "cloud",
+				Service:    "machine",
+				Region:     "eu-central-1",
+				Identifier: "1234567890",
+				Resource:   "ulysses",
+			},
+			expected: true,
+		},
+		{
+			desc: "returns true when the URNs are equal and the other has a wildcard",
+			urn: &URN{
+				Namespace:  "urn",
+				Partition:  "cloud",
+				Service:    "machine",
+				Region:     "eu-central-1",
+				Identifier: "1234567890",
+				Resource:   "*",
+			},
+			other: &URN{
+				Namespace:  "urn",
+				Partition:  "cloud",
+				Service:    "machine",
+				Region:     "eu-central-1",
+				Identifier: "1234567890",
+				Resource:   "ulysses",
+			},
+			expected: true,
+		},
+		{
+			desc: "returns true when the URNs are equal and the other has a wildcard",
+			urn: &URN{
+				Namespace:  "urn",
+				Partition:  "cloud",
+				Service:    "machine",
+				Region:     "eu-central-1",
+				Identifier: "1234567890",
+				Resource:   "",
+			},
+			other: &URN{
+				Namespace:  "urn",
+				Partition:  "cloud",
+				Service:    "machine",
+				Region:     "eu-central-1",
+				Identifier: "1234567890",
+				Resource:   "ulysses",
+			},
+			expected: true,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.desc, func(t *testing.T) {
+			assert.Equal(t, tc.expected, tc.urn.Match(tc.other))
+		})
+	}
+}
+
 func TestParse(t *testing.T) {
 	tests := []struct {
 		desc        string
