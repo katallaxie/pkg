@@ -58,7 +58,7 @@ func (u *URN) String() string {
 //
 //nolint:gocyclo
 func (u *URN) Match(urn *URN) bool {
-	return u.Namespace == urn.Namespace &&
+	return (u.Namespace == urn.Namespace || (u.Namespace == Wildcard && urn.Namespace == Wildcard) || (u.Namespace == Empty && urn.Namespace == Empty) || urn.Namespace == Wildcard || urn.Namespace == Empty) &&
 		(u.Partition == urn.Partition || (u.Partition == Wildcard && urn.Partition == Wildcard) || (u.Partition == Empty && urn.Partition == Empty) || urn.Partition == Wildcard || urn.Partition == Empty) &&
 		(u.Service == urn.Service || (u.Service == Wildcard && urn.Service == Wildcard) || (u.Service == Empty && urn.Service == Empty) || urn.Service == Wildcard || urn.Service == Empty) &&
 		(u.Region == urn.Region || (u.Region == Wildcard && urn.Region == Wildcard) || (u.Region == Empty && urn.Region == Empty) || urn.Region == Wildcard || urn.Region == Empty) &&
