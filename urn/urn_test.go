@@ -9,12 +9,12 @@ import (
 func TestNew(t *testing.T) {
 	tests := []struct {
 		desc        string
-		namespace   string
-		partition   string
-		service     string
-		region      string
-		identifier  string
-		resource    string
+		namespace   Match
+		partition   Match
+		service     Match
+		region      Match
+		identifier  Match
+		resource    Match
 		expected    *URN
 		expectedErr bool
 	}{
@@ -84,7 +84,7 @@ func TestMatch(t *testing.T) {
 				Service:    "machine",
 				Region:     "eu-central-1",
 				Identifier: "1234567890",
-				Resource:   "*",
+				Resource:   "ulysses",
 			},
 			other: &URN{
 				Namespace:  "urn",
@@ -92,7 +92,7 @@ func TestMatch(t *testing.T) {
 				Service:    "machine",
 				Region:     "eu-central-1",
 				Identifier: "1234567890",
-				Resource:   "ulysses",
+				Resource:   "*",
 			},
 			expected: true,
 		},
@@ -104,7 +104,27 @@ func TestMatch(t *testing.T) {
 				Service:    "machine",
 				Region:     "eu-central-1",
 				Identifier: "1234567890",
-				Resource:   "",
+				Resource:   "ulysses",
+			},
+			other: &URN{
+				Namespace:  "urn",
+				Partition:  "cloud",
+				Service:    "machine",
+				Region:     "eu-central-1",
+				Identifier: "*",
+				Resource:   "*",
+			},
+			expected: true,
+		},
+		{
+			desc: "returns true when the URNs are equal and the other has a wildcard",
+			urn: &URN{
+				Namespace:  "urn",
+				Partition:  "cloud",
+				Service:    "machine",
+				Region:     "eu-central-1",
+				Identifier: "1234567890",
+				Resource:   "*",
 			},
 			other: &URN{
 				Namespace:  "urn",
@@ -114,7 +134,7 @@ func TestMatch(t *testing.T) {
 				Identifier: "1234567890",
 				Resource:   "ulysses",
 			},
-			expected: true,
+			expected: false,
 		},
 	}
 
@@ -133,20 +153,47 @@ func TestParse(t *testing.T) {
 		expectedErr bool
 	}{
 		{
-			desc:   "returns an ErrorInvalid when missing the namespace",
-			urnStr: ":cloud:machine::1234567890:ulysses",
+			desc:        "returns an ErrorInvalid when identifier is longer than 256 chars",
+			urnStr:      "urn:collection:::aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaas:123456",
+			expectedErr: true,
 		},
 		{
-			desc:   "returns an ErrorInvalid when identifier is longer than 256 chars",
-			urnStr: "urn:collection:::aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaas:123456",
+			desc:   "returns a wildcard URN",
+			urnStr: "*",
+			expected: &URN{
+				Namespace:  Wildcard,
+				Partition:  Wildcard,
+				Service:    Wildcard,
+				Region:     Wildcard,
+				Identifier: Wildcard,
+				Resource:   Wildcard,
+			},
+			expectedErr: false,
+		},
+		{
+			desc:   "returns a wildcard URN",
+			urnStr: "urn:*:*::1234567890:*",
+			expected: &URN{
+				Namespace:  "urn",
+				Partition:  Wildcard,
+				Service:    Wildcard,
+				Region:     Wildcard,
+				Identifier: "1234567890",
+				Resource:   Wildcard,
+			},
+			expectedErr: false,
 		},
 	}
 
 	for _, tc := range tests {
 		t.Run(tc.desc, func(t *testing.T) {
-			_, err := Parse(tc.urnStr)
+			urn, err := Parse(tc.urnStr)
 
-			assert.Error(t, err)
+			if tc.expectedErr {
+				assert.Error(t, err)
+			}
+
+			assert.Equal(t, tc.expected, urn)
 		})
 	}
 }

@@ -22,6 +22,11 @@ var (
 	Empty Match = ""
 )
 
+// String returns the string representation of the match.
+func (m Match) String() string {
+	return string(m)
+}
+
 // ErrorInvalid is returned when parsing an URN with an invalid format.
 var ErrorInvalid = errors.New("invalid URN format")
 
@@ -30,32 +35,33 @@ var validate = validator.New()
 // URN represents a unique, uniform identifier for a resource
 type URN struct {
 	// Namespace is the namespace segment of the URN.
-	Namespace string `validate:"required"`
+	Namespace Match `validate:"required"`
 	// Partition is the partition segment of the URN.
-	Partition string `validate:"max=256"`
+	Partition Match `validate:"max=256"`
 	// Service is the service segment of the URN.
-	Service string `validate:"max=256"`
+	Service Match `validate:"max=256"`
 	// Region is the region segment of the URN.
-	Region string `validate:"max=256"`
+	Region Match `validate:"max=256"`
 	// Identifier is the identifier segment of the URN.
-	Identifier string `validate:"max=64"`
+	Identifier Match `validate:"max=64"`
 	// Resource is the resource segment of the URN.
-	Resource string `validate:"required,max=256"`
+	Resource Match `validate:"required,max=256"`
 }
 
 // String returns the string representation of the URN.
 func (u *URN) String() string {
-	return strings.Join([]string{u.Namespace, u.Partition, u.Service, u.Region, u.Identifier, u.Resource}, Separator)
+	return strings.Join([]string{u.Namespace.String(), u.Partition.String(), u.Service.String(), u.Region.String(), u.Identifier.String(), u.Resource.String()}, Separator)
 }
 
-// Match returns true if the URN matches the given URN.
+// Match returns true if the right-hand side URN matches the left-hand side URN.
+// The left-hand side URN is assumed to be specific and the right-hand side URN is assumed to be generic.
 func (u *URN) Match(urn *URN) bool {
 	return u.Namespace == urn.Namespace &&
-		(u.Partition == urn.Partition || Match(u.Partition) == Wildcard || Match(urn.Partition) == Wildcard || Match(u.Partition) == Empty || Match(urn.Partition) == Empty) &&
-		(u.Service == urn.Service || Match(u.Service) == Wildcard || Match(urn.Service) == Wildcard || Match(u.Service) == Empty || Match(urn.Service) == Empty) &&
-		(u.Region == urn.Region || Match(u.Region) == Wildcard || Match(urn.Region) == Wildcard || Match(u.Region) == Empty || Match(urn.Region) == Empty) &&
-		(u.Identifier == urn.Identifier || Match(u.Identifier) == Wildcard || Match(urn.Identifier) == Wildcard || Match(u.Identifier) == Empty || Match(urn.Identifier) == Empty) &&
-		(u.Resource == urn.Resource || Match(u.Resource) == Wildcard || Match(urn.Resource) == Wildcard || Match(u.Resource) == Empty || Match(urn.Resource) == Empty)
+		(u.Partition == urn.Partition || Match(urn.Partition) == Wildcard || Match(urn.Partition) == Empty) &&
+		(u.Service == urn.Service || Match(urn.Service) == Wildcard || Match(urn.Service) == Empty) &&
+		(u.Region == urn.Region || Match(urn.Region) == Wildcard || Match(urn.Region) == Empty) &&
+		(u.Identifier == urn.Identifier || Match(urn.Identifier) == Wildcard || Match(urn.Identifier) == Empty) &&
+		(u.Resource == urn.Resource || Match(urn.Resource) == Wildcard || Match(urn.Resource) == Empty)
 }
 
 // ExactMatch returns true if the URN matches the given URN exactly.
@@ -69,7 +75,7 @@ func (u *URN) ExactMatch(urn *URN) bool {
 }
 
 // New takes a namespace, partition, service, region, identifier and resource and returns a URN.
-func New(namespace, partition, service, region, identifier, resource string) (*URN, error) {
+func New(namespace, partition, service, region, identifier, resource Match) (*URN, error) {
 	urn := &URN{
 		Namespace:  namespace,
 		Partition:  partition,
@@ -90,18 +96,37 @@ func New(namespace, partition, service, region, identifier, resource string) (*U
 
 // Parse takes a string and parses it to a URN.
 func Parse(s string) (*URN, error) {
+	if Match(s) == Wildcard {
+		return &URN{
+			Namespace:  Wildcard,
+			Partition:  Wildcard,
+			Service:    Wildcard,
+			Region:     Wildcard,
+			Identifier: Wildcard,
+			Resource:   Wildcard,
+		}, nil
+	}
+
 	segments := strings.SplitN(s, Separator, 6)
 	if len(segments) < 5 {
 		return nil, ErrorInvalid
 	}
 
+	mm := make([]Match, len(segments))
+	for i, segment := range segments {
+		mm[i] = Match(segment)
+		if Match(segment) == Wildcard || Match(segment) == Empty {
+			mm[i] = Wildcard
+		}
+	}
+
 	urn := &URN{
-		Namespace:  segments[0],
-		Partition:  segments[1],
-		Service:    segments[2],
-		Region:     segments[3],
-		Identifier: segments[4],
-		Resource:   segments[5],
+		Namespace:  mm[0],
+		Partition:  mm[1],
+		Service:    mm[2],
+		Region:     mm[3],
+		Identifier: mm[4],
+		Resource:   mm[5],
 	}
 
 	validate = validator.New()
@@ -117,16 +142,16 @@ func Parse(s string) (*URN, error) {
 func (u *URN) ProtoMessage() *ResourceURN {
 	return &ResourceURN{
 		Canonical:  u.String(),
-		Namespace:  u.Namespace,
-		Partition:  u.Partition,
-		Service:    u.Service,
-		Region:     u.Region,
-		Identifier: u.Identifier,
-		Resource:   u.Resource,
+		Namespace:  u.Namespace.String(),
+		Partition:  u.Partition.String(),
+		Service:    u.Service.String(),
+		Region:     u.Region.String(),
+		Identifier: u.Identifier.String(),
+		Resource:   u.Resource.String(),
 	}
 }
 
 // FromProto returns the URN representation from a proto.ResourceURN representation.
 func FromProto(r *ResourceURN) (*URN, error) {
-	return New(r.Namespace, r.Partition, r.Service, r.Region, r.Identifier, r.Resource)
+	return Parse(r.Canonical)
 }
