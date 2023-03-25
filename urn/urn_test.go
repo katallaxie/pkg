@@ -136,6 +136,46 @@ func TestMatch(t *testing.T) {
 			},
 			expected: false,
 		},
+		{
+			desc: "returns true when the URNs are equal and the other has a wildcard",
+			urn: &URN{
+				Namespace:  "urn",
+				Partition:  "cloud",
+				Service:    "machine",
+				Region:     "",
+				Identifier: "1234567890",
+				Resource:   "*",
+			},
+			other: &URN{
+				Namespace:  "urn",
+				Partition:  "cloud",
+				Service:    "machine",
+				Region:     "",
+				Identifier: "1234567890",
+				Resource:   "ulysses",
+			},
+			expected: false,
+		},
+		{
+			desc: "returns true when the URNs are equal and the other has a wildcard",
+			urn: &URN{
+				Namespace:  "urn",
+				Partition:  "cloud",
+				Service:    "machine",
+				Region:     "",
+				Identifier: "1234567890",
+				Resource:   "ulysses",
+			},
+			other: &URN{
+				Namespace:  "urn",
+				Partition:  "cloud",
+				Service:    "machine",
+				Region:     "",
+				Identifier: "1234567890",
+				Resource:   "*",
+			},
+			expected: true,
+		},
 	}
 
 	for _, tc := range tests {

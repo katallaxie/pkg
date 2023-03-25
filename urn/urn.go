@@ -19,7 +19,7 @@ var (
 	// Wildcard is the wildcard used to match any value.
 	Wildcard Match = "*"
 	// Empty is the empty string
-	Empty Match = ""
+	Empty Match
 )
 
 // String returns the string representation of the match.
@@ -55,13 +55,15 @@ func (u *URN) String() string {
 
 // Match returns true if the right-hand side URN matches the left-hand side URN.
 // The left-hand side URN is assumed to be specific and the right-hand side URN is assumed to be generic.
+//
+//nolint:gocyclo
 func (u *URN) Match(urn *URN) bool {
 	return u.Namespace == urn.Namespace &&
-		(u.Partition == urn.Partition || Match(urn.Partition) == Wildcard || Match(urn.Partition) == Empty) &&
-		(u.Service == urn.Service || Match(urn.Service) == Wildcard || Match(urn.Service) == Empty) &&
-		(u.Region == urn.Region || Match(urn.Region) == Wildcard || Match(urn.Region) == Empty) &&
-		(u.Identifier == urn.Identifier || Match(urn.Identifier) == Wildcard || Match(urn.Identifier) == Empty) &&
-		(u.Resource == urn.Resource || Match(urn.Resource) == Wildcard || Match(urn.Resource) == Empty)
+		(u.Partition == urn.Partition || (u.Partition == Wildcard && urn.Partition == Wildcard) || (u.Partition == Empty && urn.Partition == Empty) || urn.Partition == Wildcard || urn.Partition == Empty) &&
+		(u.Service == urn.Service || (u.Service == Wildcard && urn.Service == Wildcard) || (u.Service == Empty && urn.Service == Empty) || urn.Service == Wildcard || urn.Service == Empty) &&
+		(u.Region == urn.Region || (u.Region == Wildcard && urn.Region == Wildcard) || (u.Region == Empty && urn.Region == Empty) || urn.Region == Wildcard || urn.Region == Empty) &&
+		(u.Identifier == urn.Identifier || (u.Identifier == Wildcard && urn.Identifier == Wildcard) || (u.Identifier == Empty && urn.Identifier == Empty) || urn.Identifier == Wildcard || urn.Identifier == Empty) &&
+		(u.Resource == urn.Resource || (u.Resource == Wildcard && urn.Resource == Wildcard) || (u.Resource == Empty && urn.Resource == Empty) || urn.Resource == Wildcard || urn.Resource == Empty)
 }
 
 // ExactMatch returns true if the URN matches the given URN exactly.
