@@ -1,6 +1,30 @@
 package access
 
-import "github.com/katallaxie/pkg/urn"
+import (
+	"strings"
+
+	"github.com/katallaxie/pkg/urn"
+)
+
+const (
+	// ActionAccessService is the action that the rule applies to.
+	AccessService urn.Match = "access"
+)
+
+// IsRole returns true if the resource is a role.
+func IsRole(u *urn.URN) bool {
+	return u.Service == AccessService && strings.HasPrefix(u.Resource.String(), "roles")
+}
+
+// IsUser returns true if the resource is a user.
+func IsUser(u *urn.URN) bool {
+	return u.Service == AccessService && strings.HasPrefix(u.Resource.String(), "users")
+}
+
+// IsGroup returns true if the resource is a group.
+func IsGroup(u *urn.URN) bool {
+	return u.Service == AccessService && strings.HasPrefix(u.Resource.String(), "groups")
+}
 
 // Policy is a set of rules that define how a user can access a resource.
 type Policy struct {

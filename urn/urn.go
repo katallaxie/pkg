@@ -103,6 +103,9 @@ func New(namespace, partition, service, region, identifier, resource Match) (*UR
 
 // Parse takes a string and parses it to a URN.
 func Parse(s string) (*URN, error) {
+	s = strings.ToLower(s)
+	s = strings.TrimSpace(s)
+
 	if Match(s) == Wildcard {
 		return &URN{
 			Namespace:  Wildcard,
