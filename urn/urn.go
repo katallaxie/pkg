@@ -4,8 +4,9 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/go-playground/validator/v10"
 	pb "github.com/katallaxie/pkg/proto"
+
+	"github.com/go-playground/validator/v10"
 )
 
 const (
