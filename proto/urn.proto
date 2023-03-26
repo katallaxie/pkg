@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package katallaxie.protobuf;
 
-option go_package = "github.com/katallaxie/pkg/urn";
+option go_package = ".;proto";
 
 // A ResourceURN represents a unique identifier of a resource in a service.
 message ResourceURN {

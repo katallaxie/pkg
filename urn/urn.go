@@ -5,14 +5,17 @@ import (
 	"strings"
 
 	"github.com/go-playground/validator/v10"
+	pb "github.com/katallaxie/pkg/proto"
 )
 
 const (
-	// Separator is the separator used to separate the segments of a URN.
-	Separator = ":"
+	// DefaultSeparator is the separator used to separate the segments of a URN.
+	DefaultSeparator = ":"
+	// DefaultNamespace is the default namespace used for URNs.
+	DefaultNamespace = "urn"
 )
 
-// Match ...
+// Match is a string that can be used to match a URN segment.
 type Match string
 
 var (
@@ -30,6 +33,7 @@ func (m Match) String() string {
 // ErrorInvalid is returned when parsing an URN with an invalid format.
 var ErrorInvalid = errors.New("urn: invalid format")
 
+// use a single instance of Validate, it caches struct info.
 var validate = validator.New()
 
 // URN represents a unique, uniform identifier for a resource
@@ -50,7 +54,7 @@ type URN struct {
 
 // String returns the string representation of the URN.
 func (u *URN) String() string {
-	return strings.Join([]string{u.Namespace.String(), u.Partition.String(), u.Service.String(), u.Region.String(), u.Identifier.String(), u.Resource.String()}, Separator)
+	return strings.Join([]string{u.Namespace.String(), u.Partition.String(), u.Service.String(), u.Region.String(), u.Identifier.String(), u.Resource.String()}, DefaultSeparator)
 }
 
 // Match returns true if the right-hand side URN matches the left-hand side URN.
@@ -109,7 +113,7 @@ func Parse(s string) (*URN, error) {
 		}, nil
 	}
 
-	segments := strings.SplitN(s, Separator, 6)
+	segments := strings.SplitN(s, DefaultSeparator, 6)
 	if len(segments) < 5 {
 		return nil, ErrorInvalid
 	}
@@ -141,8 +145,8 @@ func Parse(s string) (*URN, error) {
 }
 
 // ProtoMessage returns the proto.ResourceURN representation of the URN.
-func (u *URN) ProtoMessage() *ResourceURN {
-	return &ResourceURN{
+func (u *URN) ProtoMessage() *pb.ResourceURN {
+	return &pb.ResourceURN{
 		Canonical:  u.String(),
 		Namespace:  u.Namespace.String(),
 		Partition:  u.Partition.String(),
@@ -154,6 +158,6 @@ func (u *URN) ProtoMessage() *ResourceURN {
 }
 
 // FromProto returns the URN representation from a proto.ResourceURN representation.
-func FromProto(r *ResourceURN) (*URN, error) {
+func FromProto(r *pb.ResourceURN) (*URN, error) {
 	return Parse(r.Canonical)
 }

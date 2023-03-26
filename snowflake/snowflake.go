@@ -6,6 +6,8 @@ import (
 	"strconv"
 	"sync"
 	"time"
+
+	pb "github.com/katallaxie/pkg/proto"
 )
 
 //
@@ -75,14 +77,10 @@ func ParseBytes(id []byte) (ID, error) {
 	return ID(i), err
 }
 
-func (i ID) ProtoMessage() *Snowflake {
-	return &Snowflake{
+func (i ID) ProtoMessage() *pb.Snowflake {
+	return &pb.Snowflake{
 		Id: i.Int64(),
 	}
-}
-
-func (s *Snowflake) ID() ID {
-	return ID(s.GetId())
 }
 
 func ParseInt64(id int64) ID {

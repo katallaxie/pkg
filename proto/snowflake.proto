@@ -2,8 +2,9 @@ syntax = "proto3";
 
 package katallaxie.protobuf;
 
-option go_package = "github.com/katallaxie/pkg/snowflake";
+option go_package = ".;proto";
 
+// Snowflake is a unique identifier for a message.
 message Snowflake {
   int64 id = 1;
 }
