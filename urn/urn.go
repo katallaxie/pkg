@@ -28,7 +28,7 @@ func (m Match) String() string {
 }
 
 // ErrorInvalid is returned when parsing an URN with an invalid format.
-var ErrorInvalid = errors.New("invalid URN format")
+var ErrorInvalid = errors.New("urn: invalid format")
 
 var validate = validator.New()
 

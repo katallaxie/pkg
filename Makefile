@@ -21,6 +21,10 @@ fmt: ## Run go fmt against code.
 vet: ## Run go vet against code.
 	go vet ./...
 
+.PHONY: bench
+bench: ## Run benchmarks.
+	$(GO) test -bench=. --count=1 -run=^# ./...
+
 .PHONY: test
 test: fmt vet ## Run tests.
 	mkdir -p .test/reports

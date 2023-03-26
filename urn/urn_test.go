@@ -49,6 +49,22 @@ func TestNew(t *testing.T) {
 	}
 }
 
+func BenchmarkNew(b *testing.B) {
+	b.ReportAllocs()
+
+	for i := 0; i < b.N; i++ {
+		New("urn", "cloud", "machine", "eu-central-1", "1234567890", "ulysses")
+	}
+}
+
+func BenchmarkParse(b *testing.B) {
+	b.ReportAllocs()
+
+	for i := 0; i < b.N; i++ {
+		Parse("urn:cloud:machine:eu-central-1:1234567890:ulysses")
+	}
+}
+
 func TestMatch(t *testing.T) {
 	tests := []struct {
 		desc     string
