@@ -81,6 +81,14 @@ func (u *URN) ExactMatch(urn *URN) bool {
 		u.Resource == urn.Resource
 }
 
+// MatchFunc is a function that returns true if the URN matches.
+type MatchFunc func(*URN) bool
+
+// MatchFunc is a function that returns true if the URN matches.
+func (u *URN) MatchFunc(f MatchFunc) bool {
+	return f(u)
+}
+
 // New takes a namespace, partition, service, region, identifier and resource and returns a URN.
 func New(namespace, partition, service, region, identifier, resource Match) (*URN, error) {
 	urn := &URN{
