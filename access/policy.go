@@ -38,17 +38,40 @@ type Policy struct {
 	Rules []Rule `json:"rules"`
 }
 
-// Evaluator is the interface that wraps the Allowed method.
-type Evaluator interface {
+// Matcher is a function that returns true if the URN matches.
+type Matcher func(l *urn.URN, r *urn.URN) bool
+
+// IdentityBasedMatcher is a matcher that matches the URN based on the identity.
+//
+//nolint:gocyclo
+var IdentityBasedMatcher = func(l *urn.URN, r *urn.URN) bool {
+	return (l.Namespace == r.Namespace || (l.Namespace == urn.Wildcard && r.Namespace == urn.Wildcard) || (l.Namespace == urn.Empty && r.Namespace == urn.Empty) || r.Namespace == urn.Wildcard || r.Namespace == urn.Empty) &&
+		(l.Partition == r.Partition || (l.Partition == urn.Wildcard && r.Partition == urn.Wildcard) || (l.Partition == urn.Empty && r.Partition == urn.Empty) || r.Partition == urn.Wildcard || r.Partition == urn.Empty) &&
+		(l.Service == r.Service || (l.Service == urn.Wildcard && r.Service == urn.Wildcard) || (l.Service == urn.Empty && r.Service == urn.Empty) || r.Service == urn.Wildcard || r.Service == urn.Empty) &&
+		(l.Region == r.Region || (l.Region == urn.Wildcard && r.Region == urn.Wildcard) || (l.Region == urn.Empty && r.Region == urn.Empty) || r.Region == urn.Wildcard || r.Region == urn.Empty) &&
+		(l.Identifier == r.Identifier || (l.Identifier == urn.Wildcard && r.Identifier == urn.Wildcard) || (l.Identifier == urn.Empty && r.Identifier == urn.Empty) || r.Identifier == urn.Wildcard || r.Identifier == urn.Empty) &&
+		(l.Resource == r.Resource || (l.Resource == urn.Wildcard && r.Resource == urn.Wildcard) || (l.Resource == urn.Empty && r.Resource == urn.Empty) || r.Resource == urn.Wildcard || r.Resource == urn.Empty)
+}
+
+// NewEvaluator returns a new evaluator.
+func NewEvaluator(m Matcher, a Accessor) *Evaluator {
+	return &Evaluator{m, a}
+}
+
+// Accessor is the interface to allow or deny access.
+type Accessor interface {
 	// Allow returns true if the user is allowed to perform the action on the resource.
 	Allow(res *urn.URN, action Action, policies ...Policy) (bool, error)
 }
 
-// DefaultEvaluator is the default evaluator.
-type DefaultEvaluator struct{}
+// Evaluator evaluates the policies and returns true if the user is allowed to perform the action on the resource.
+type Evaluator struct {
+	Matcher
+	Accessor
+}
 
 // Allow returns true if the user is allowed to perform the action on the resource.
-func (d *DefaultEvaluator) Allow(res *urn.URN, action Action, policies ...Policy) (bool, error) {
+func (d *Evaluator) Allow(res *urn.URN, action Action, policies ...Policy) (bool, error) {
 	var allow bool // default to deny
 
 	for _, p := range policies {
@@ -61,7 +84,7 @@ func (d *DefaultEvaluator) Allow(res *urn.URN, action Action, policies ...Policy
 							return false, err
 						}
 
-						if !res.Match(u) {
+						if !d.Matcher(u, res) {
 							continue
 						}
 
@@ -73,11 +96,6 @@ func (d *DefaultEvaluator) Allow(res *urn.URN, action Action, policies ...Policy
 	}
 
 	return allow, nil
-}
-
-// NewDefaultEvaluator returns a new evaluator.
-func NewDefaultEvaluator() *DefaultEvaluator {
-	return &DefaultEvaluator{}
 }
 
 // Rule is a set of conditions that define how a user can access a resource.

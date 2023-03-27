@@ -10,8 +10,7 @@ import (
 )
 
 // Client is the interface for the access client.
-type Access interface {
-}
+type Access interface{}
 
 // Client is the access client.
 type Client struct {
