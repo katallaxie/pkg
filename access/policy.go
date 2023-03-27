@@ -54,7 +54,7 @@ func (d *DefaultEvaluator) Allow(res *urn.URN, action Action, policies ...Policy
 	for _, p := range policies {
 		for _, r := range p.Rules {
 			for _, a := range r.Actions {
-				if Action(a) == action {
+				if a == action {
 					for _, rr := range r.Resources {
 						u, err := urn.Parse(rr.String())
 						if err != nil {
