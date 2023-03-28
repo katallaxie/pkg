@@ -32,6 +32,73 @@ func TestDefaultServices(t *testing.T) {
 	assert.Equal(t, s, DefaultServices)
 }
 
+func TestPolicyUnmarshalJSON(t *testing.T) {
+	tests := []struct {
+		desc string
+		json json.RawMessage
+		pol  *Policy
+		err  error
+	}{
+		{
+			desc: "suceessfully unmarshal policy",
+			json: json.RawMessage(`{"version":"2023-03-28", "rules": []}`),
+			pol: &Policy{
+				Version: DefaultVersion,
+				Rules:   Rules{},
+			},
+		},
+		{
+			desc: "suceessfully unmarshal rules",
+			json: json.RawMessage(`{
+				"version":"2023-03-28",
+				"rules": [
+					{
+						"id": "1",
+						"effect": "allow",
+						"resources": [
+							"ionos:k8s:de-fra:12345678910:/cluster/12345678910"
+						],
+						"actions": [
+							"k8s:cluster-create"
+						]
+					}
+				]
+			}`),
+			pol: &Policy{
+				Version: DefaultVersion,
+				Rules: Rules{
+					{
+						ID:     "1",
+						Effect: Allow,
+						Resources: Resources{
+							"ionos:k8s:de-fra:12345678910:/cluster/12345678910",
+						},
+						Actions: Actions{
+							"k8s:cluster-create",
+						},
+					},
+				},
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.desc, func(t *testing.T) {
+			p := DefaultPolicy()
+			err := p.UnmarshalJSON(test.json)
+
+			if test.err != nil {
+				assert.EqualError(t, err, test.err.Error())
+			} else {
+				assert.NoError(t, err)
+			}
+
+			assert.Equal(t, test.pol.Version, p.Version)
+			assert.Equal(t, test.pol.Rules, p.Rules)
+		})
+	}
+}
+
 func BenchmarkPolicyUnmarshal(b *testing.B) {
 	b.ReportAllocs()
 

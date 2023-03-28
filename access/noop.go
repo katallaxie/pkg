@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	pb "github.com/katallaxie/pkg/proto"
+
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/test/bufconn"

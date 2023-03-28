@@ -1,9 +1,12 @@
 package access
 
 import (
+	"encoding/json"
 	"strings"
 
 	"github.com/katallaxie/pkg/urn"
+
+	"github.com/pkg/errors"
 )
 
 // DefaultVersion
@@ -95,7 +98,35 @@ type Policy struct {
 	// Description is the description of the policy.
 	Description string `json:"description"`
 	// Rules is the list of rules that define how a user can access a resource.
-	Rules []Rule `json:"rules"`
+	Rules Rules `json:"rules"`
+}
+
+// DefaultPolicy returns the default policy.
+func DefaultPolicy() *Policy {
+	return &Policy{
+		Version: DefaultVersion,
+		Rules:   []Rule{},
+	}
+}
+
+// UnmarshalJSON overwrite own policy with values of the given in policy in JSON format
+func (p *Policy) UnmarshalJSON(data []byte) error {
+	pol := struct {
+		Description string `json:"description"`
+		ID          string `json:"id"`
+		Name        string `json:"name"`
+		Rules       Rules  `json:"rules"`
+		Version     string `json:"version"`
+	}{}
+
+	if err := json.Unmarshal(data, &pol); err != nil {
+		return errors.WithStack(err)
+	}
+
+	p.Rules = pol.Rules
+	p.Version = pol.Version
+
+	return nil
 }
 
 // Matcher is a function that returns true if the URN matches.
@@ -163,14 +194,17 @@ type Rule struct {
 	// ID is the unique identifier of the rule.
 	ID string `json:"id"`
 	// Resources is the list of resources that the rule applies to.
-	Resources []Resource `json:"resources"`
+	Resources Resources `json:"resources"`
 	// Actions is the list of actions that the rule applies to.
-	Actions []Action `json:"actions"`
+	Actions Actions `json:"actions"`
 	// Effect is the effect of the rule, it can be allow or deny.
 	Effect Effect `json:"effect"`
 	// Conditions is the list of conditions that the rule applies to.
-	Conditions []Condition `json:"conditions"`
+	Conditions Conditions `json:"conditions"`
 }
+
+// Rules is a list of rules.
+type Rules []Rule
 
 // Condition is a set of key-value pairs that define how a user can access a resource.
 type Condition struct {
@@ -181,6 +215,9 @@ type Condition struct {
 	// Operator is the operator of the condition.
 	Operator string `json:"operator"`
 }
+
+// Conditions is a list of conditions.
+type Conditions []Condition
 
 // Effect is the effect of the rule, it can be allow or deny.
 type Effect string
@@ -199,6 +236,9 @@ func (a Action) String() string {
 	return string(a)
 }
 
+// Actions is a list of actions.
+type Actions []Action
+
 // Resource is the resource that the rule applies to.
 type Resource string
 
@@ -211,3 +251,6 @@ func (r Resource) String() string {
 func (r Resource) URN() (*urn.URN, error) {
 	return urn.Parse(r.String())
 }
+
+// Resources is a list of resources.
+type Resources []Resource
