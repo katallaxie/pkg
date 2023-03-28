@@ -1,6 +1,7 @@
 package access
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/katallaxie/pkg/urn"
@@ -29,6 +30,30 @@ func TestDefaultServices(t *testing.T) {
 	DefaultServices.Add("k8s")
 
 	assert.Equal(t, s, DefaultServices)
+}
+
+func BenchmarkPolicyUnmarshal(b *testing.B) {
+	b.ReportAllocs()
+
+	for i := 0; i < b.N; i++ {
+		var p Policy
+		_ = json.Unmarshal([]byte(`{
+			"name": "changePassword",
+			"version": "2023-03-28",
+			"description": "Allow users to change their password",
+			"rules": [
+				{
+					"actions": [
+						"iam:changePassword"
+					],
+					"effect": "Allow",
+					"resources": [
+						"urn:cloud:machine:eu-central-1:1234567890:root"
+					]
+				}
+			]
+		}`), &p)
+	}
 }
 
 func TestIs(t *testing.T) {
@@ -141,6 +166,57 @@ func TestIs(t *testing.T) {
 	}
 }
 
+func BenchmarkIs_UserResouceIdentifier(b *testing.B) {
+	b.ReportAllocs()
+
+	urn := &urn.URN{
+		Namespace:  urn.Match("urn"),
+		Partition:  urn.Match("cloud"),
+		Service:    urn.Match("access"),
+		Region:     urn.Match("eu-central-1"),
+		Identifier: urn.Match("1234567890"),
+		Resource:   urn.Match("users/ulysses"),
+	}
+
+	for i := 0; i < b.N; i++ {
+		Is(urn, UserResourceIdentifier)
+	}
+}
+
+func BenchmarkIs_RoleResouceIdentifier(b *testing.B) {
+	b.ReportAllocs()
+
+	urn := &urn.URN{
+		Namespace:  urn.Match("urn"),
+		Partition:  urn.Match("cloud"),
+		Service:    urn.Match("access"),
+		Region:     urn.Match("eu-central-1"),
+		Identifier: urn.Match("1234567890"),
+		Resource:   urn.Match("roles/ulysses"),
+	}
+
+	for i := 0; i < b.N; i++ {
+		Is(urn, RoleResourceIdentifier)
+	}
+}
+
+func BenchmarkIs_GroupResouceIdentifier(b *testing.B) {
+	b.ReportAllocs()
+
+	urn := &urn.URN{
+		Namespace:  urn.Match("urn"),
+		Partition:  urn.Match("cloud"),
+		Service:    urn.Match("access"),
+		Region:     urn.Match("eu-central-1"),
+		Identifier: urn.Match("1234567890"),
+		Resource:   urn.Match("groups/ulysses"),
+	}
+
+	for i := 0; i < b.N; i++ {
+		Is(urn, GroupResourceIdentifier)
+	}
+}
+
 func TestResource_URN(t *testing.T) {
 	r := Resource("urn:cloud:machine:eu-central-1:1234567890:ulysses")
 	u, err := r.URN()
@@ -208,5 +284,28 @@ func TestMatcher(t *testing.T) {
 		t.Run(tt.desc, func(t *testing.T) {
 			assert.Equal(t, tt.expect, tt.matcher(tt.l, tt.r))
 		})
+	}
+}
+
+func BenchmarkMatcher_IdentityBased(b *testing.B) {
+	l := &urn.URN{
+		Namespace:  urn.Match("urn"),
+		Partition:  urn.Match("cloud"),
+		Service:    urn.Match("machine"),
+		Region:     urn.Match("eu-central-1"),
+		Identifier: urn.Match("1234567890"),
+		Resource:   urn.Match("ulysses"),
+	}
+	r := &urn.URN{
+		Namespace:  urn.Match("urn"),
+		Partition:  urn.Match("cloud"),
+		Service:    urn.Match("machine"),
+		Region:     urn.Match("eu-central-1"),
+		Identifier: urn.Match("1234567890"),
+		Resource:   urn.Match("ulysses"),
+	}
+
+	for i := 0; i < b.N; i++ {
+		IdentityBasedMatcher(l, r)
 	}
 }

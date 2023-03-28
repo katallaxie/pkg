@@ -6,6 +6,9 @@ import (
 	"github.com/katallaxie/pkg/urn"
 )
 
+// DefaultVersion
+const DefaultVersion = "2023-03-28"
+
 const (
 	defaultAccessService = "access"
 )
@@ -83,6 +86,8 @@ func Is(u *urn.URN, i ResourceIdentifier) bool {
 
 // Policy is a set of rules that define how a user can access a resource.
 type Policy struct {
+	// Version is the version of the policy.
+	Version string `json:"version"`
 	// ID is the unique identifier of the policy.
 	ID string `json:"id"`
 	// Name is the name of the policy.
