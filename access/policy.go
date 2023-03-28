@@ -7,26 +7,41 @@ import (
 )
 
 const (
-	// ActionAccessService is the action that the rule applies to.
-	AccessService urn.Match = "access"
+	defaultAccessService = "access"
 )
+
+// Servide is the service name of the access service.
+type Service urn.Match
+
+// Services is the list of services.
+type Services map[Service]bool
+
+// Add adds a service to the list.
+func (s Services) Add(service Service) {
+	s[service] = true
+}
+
+// DefaultServices is the default list of services.
+var DefaultServices = Services{
+	defaultAccessService: true,
+}
 
 // ResourceIdentifier is the unique identifier of a resource.
 type ResourceIdentifier func(*urn.URN) bool
 
 // RoleResourceIdentifier is the identifier for a role.
 var RoleResourceIdentifier = func(u *urn.URN) bool {
-	return u.Service == AccessService && strings.HasPrefix(u.Resource.String(), "roles")
+	return u.Service == defaultAccessService && strings.HasPrefix(u.Resource.String(), "roles")
 }
 
 // UserResourceIdentifier is the identifier for a user.
 var UserResourceIdentifier = func(u *urn.URN) bool {
-	return u.Service == AccessService && strings.HasPrefix(u.Resource.String(), "users")
+	return u.Service == defaultAccessService && strings.HasPrefix(u.Resource.String(), "users")
 }
 
 // GroupResourceIdentifier is the identifier for a group.
 var GroupResourceIdentifier = func(u *urn.URN) bool {
-	return u.Service == AccessService && strings.HasPrefix(u.Resource.String(), "groups")
+	return u.Service == defaultAccessService && strings.HasPrefix(u.Resource.String(), "groups")
 }
 
 // Is returns true if the resource matches the identifier.

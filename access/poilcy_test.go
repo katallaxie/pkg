@@ -18,6 +18,19 @@ func TestResource_String(t *testing.T) {
 	assert.Equal(t, "urn:cloud:machine:eu-central-1:1234567890:ulysses", r.String())
 }
 
+func TestDefaultServices(t *testing.T) {
+	s := Services{
+		"access": true,
+	}
+
+	assert.Equal(t, s, DefaultServices)
+
+	s.Add("k8s")
+	DefaultServices.Add("k8s")
+
+	assert.Equal(t, s, DefaultServices)
+}
+
 func TestIs(t *testing.T) {
 	tests := []struct {
 		desc     string
