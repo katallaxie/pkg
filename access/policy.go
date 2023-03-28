@@ -7,6 +7,7 @@ import (
 	"github.com/katallaxie/pkg/urn"
 
 	"github.com/pkg/errors"
+	"gopkg.in/yaml.v3"
 )
 
 // DefaultVersion
@@ -90,15 +91,15 @@ func Is(u *urn.URN, i ResourceIdentifier) bool {
 // Policy is a set of rules that define how a user can access a resource.
 type Policy struct {
 	// Version is the version of the policy.
-	Version string `json:"version"`
+	Version string `json:"version" yaml:"version"`
 	// ID is the unique identifier of the policy.
-	ID string `json:"id"`
+	ID string `json:"id" yaml:"id"`
 	// Name is the name of the policy.
-	Name string `json:"name"`
+	Name string `json:"name" yaml:"name"`
 	// Description is the description of the policy.
-	Description string `json:"description"`
+	Description string `json:"description" yaml:"description"`
 	// Rules is the list of rules that define how a user can access a resource.
-	Rules Rules `json:"rules"`
+	Rules Rules `json:"rules" yaml:"rules"`
 }
 
 // DefaultPolicy returns the default policy.
@@ -120,6 +121,26 @@ func (p *Policy) UnmarshalJSON(data []byte) error {
 	}{}
 
 	if err := json.Unmarshal(data, &pol); err != nil {
+		return errors.WithStack(err)
+	}
+
+	p.Rules = pol.Rules
+	p.Version = pol.Version
+
+	return nil
+}
+
+// UnmarshalYAML overwrite own policy with values of the given policy in YAML format.
+func (p *Policy) UnmarshalYAML(data []byte) error {
+	pol := struct {
+		Description string `yaml:"description"`
+		ID          string `yaml:"id"`
+		Name        string `yaml:"name"`
+		Rules       Rules  `yaml:"rules"`
+		Version     string `yaml:"version"`
+	}{}
+
+	if err := yaml.Unmarshal(data, &pol); err != nil {
 		return errors.WithStack(err)
 	}
 
@@ -192,15 +213,15 @@ func (d *Evaluator) Allow(res *urn.URN, action Action, policies ...Policy) (bool
 // Rule is a set of conditions that define how a user can access a resource.
 type Rule struct {
 	// ID is the unique identifier of the rule.
-	ID string `json:"id"`
+	ID string `json:"id" yaml:"id"`
 	// Resources is the list of resources that the rule applies to.
-	Resources Resources `json:"resources"`
+	Resources Resources `json:"resources" yaml:"resources"`
 	// Actions is the list of actions that the rule applies to.
-	Actions Actions `json:"actions"`
+	Actions Actions `json:"actions" yaml:"actions"`
 	// Effect is the effect of the rule, it can be allow or deny.
-	Effect Effect `json:"effect"`
+	Effect Effect `json:"effect" yaml:"effect"`
 	// Conditions is the list of conditions that the rule applies to.
-	Conditions Conditions `json:"conditions"`
+	Conditions Conditions `json:"conditions" yaml:"conditions"`
 }
 
 // Rules is a list of rules.
@@ -209,11 +230,11 @@ type Rules []Rule
 // Condition is a set of key-value pairs that define how a user can access a resource.
 type Condition struct {
 	// Key is the key of the condition.
-	Key string `json:"key"`
+	Key string `json:"key" yaml:"key"`
 	// Value is the value of the condition.
-	Value string `json:"value"`
+	Value string `json:"value" yaml:"value"`
 	// Operator is the operator of the condition.
-	Operator string `json:"operator"`
+	Operator string `json:"operator" yaml:"operator"`
 }
 
 // Conditions is a list of conditions.

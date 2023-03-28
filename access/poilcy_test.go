@@ -99,12 +99,79 @@ func TestPolicyUnmarshalJSON(t *testing.T) {
 	}
 }
 
-func BenchmarkPolicyUnmarshal(b *testing.B) {
+func TestPolicyUnmarshalYAML(t *testing.T) {
+	tests := []struct {
+		desc string
+		yaml []byte
+		pol  *Policy
+		err  error
+	}{
+		{
+			desc: "suceessfully unmarshal policy",
+			yaml: []byte(`{"version":"2023-03-28", "rules": []}`),
+			pol: &Policy{
+				Version: DefaultVersion,
+				Rules:   Rules{},
+			},
+		},
+		{
+			desc: "suceessfully unmarshal rules",
+			yaml: []byte(`{
+				"version":"2023-03-28",
+				"rules": [
+					{
+						"id": "1",
+						"effect": "allow",
+						"resources": [
+							"ionos:k8s:de-fra:12345678910:/cluster/12345678910"
+						],
+						"actions": [
+							"k8s:cluster-create"
+						]
+					}
+				]
+			}`),
+			pol: &Policy{
+				Version: DefaultVersion,
+				Rules: Rules{
+					{
+						ID:     "1",
+						Effect: Allow,
+						Resources: Resources{
+							"ionos:k8s:de-fra:12345678910:/cluster/12345678910",
+						},
+						Actions: Actions{
+							"k8s:cluster-create",
+						},
+					},
+				},
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.desc, func(t *testing.T) {
+			p := DefaultPolicy()
+			err := p.UnmarshalYAML(test.yaml)
+
+			if test.err != nil {
+				assert.EqualError(t, err, test.err.Error())
+			} else {
+				assert.NoError(t, err)
+			}
+
+			assert.Equal(t, test.pol.Version, p.Version)
+			assert.Equal(t, test.pol.Rules, p.Rules)
+		})
+	}
+}
+
+func BenchmarkPolicyUnmarshalJSON(b *testing.B) {
 	b.ReportAllocs()
 
 	for i := 0; i < b.N; i++ {
-		var p Policy
-		_ = json.Unmarshal([]byte(`{
+		p := DefaultPolicy()
+		_ = p.UnmarshalJSON([]byte(`{
 			"name": "changePassword",
 			"version": "2023-03-28",
 			"description": "Allow users to change their password",
@@ -119,7 +186,31 @@ func BenchmarkPolicyUnmarshal(b *testing.B) {
 					]
 				}
 			]
-		}`), &p)
+		}`))
+	}
+}
+
+func BenchmarkPolicyUnmarshalJYAML(b *testing.B) {
+	b.ReportAllocs()
+
+	for i := 0; i < b.N; i++ {
+		p := DefaultPolicy()
+		_ = p.UnmarshalYAML([]byte(`{
+			"name": "changePassword",
+			"version": "2023-03-28",
+			"description": "Allow users to change their password",
+			"rules": [
+				{
+					"actions": [
+						"iam:changePassword"
+					],
+					"effect": "Allow",
+					"resources": [
+						"urn:cloud:machine:eu-central-1:1234567890:root"
+					]
+				}
+			]
+		}`))
 	}
 }
 
