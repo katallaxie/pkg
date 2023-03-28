@@ -26,6 +26,38 @@ var DefaultServices = Services{
 	defaultAccessService: true,
 }
 
+// Region is the region name of the access service.
+type Region urn.Match
+
+// Regions is the list of regions.
+type Regions map[Region]bool
+
+// Add adds a region to the list.
+func (r Regions) Add(region Region) {
+	r[region] = true
+}
+
+// DefaultRegions is the default list of regions.
+var DefaultRegions = Regions{
+	"eu-central-1": true,
+}
+
+// Partition is the partition name of the access service.
+type Partition urn.Match
+
+// Partitions is the list of partitions.
+type Partitions map[Partition]bool
+
+// Add adds a partition to the list.
+func (p Partitions) Add(partition Partition) {
+	p[partition] = true
+}
+
+// DefaultPartitions is the default list of partitions.
+var DefaultPartitions = Partitions{
+	"cloud": true,
+}
+
 // ResourceIdentifier is the unique identifier of a resource.
 type ResourceIdentifier func(*urn.URN) bool
 
