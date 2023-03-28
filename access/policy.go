@@ -11,19 +11,27 @@ const (
 	AccessService urn.Match = "access"
 )
 
-// IsRole returns true if the resource is a role.
-func IsRole(u *urn.URN) bool {
+// ResourceIdentifier is the unique identifier of a resource.
+type ResourceIdentifier func(*urn.URN) bool
+
+// RoleResourceIdentifier is the identifier for a role.
+var RoleResourceIdentifier = func(u *urn.URN) bool {
 	return u.Service == AccessService && strings.HasPrefix(u.Resource.String(), "roles")
 }
 
-// IsUser returns true if the resource is a user.
-func IsUser(u *urn.URN) bool {
+// UserResourceIdentifier is the identifier for a user.
+var UserResourceIdentifier = func(u *urn.URN) bool {
 	return u.Service == AccessService && strings.HasPrefix(u.Resource.String(), "users")
 }
 
-// IsGroup returns true if the resource is a group.
-func IsGroup(u *urn.URN) bool {
+// GroupResourceIdentifier is the identifier for a group.
+var GroupResourceIdentifier = func(u *urn.URN) bool {
 	return u.Service == AccessService && strings.HasPrefix(u.Resource.String(), "groups")
+}
+
+// Is returns true if the resource matches the identifier.
+func Is(u *urn.URN, i ResourceIdentifier) bool {
+	return i(u)
 }
 
 // Policy is a set of rules that define how a user can access a resource.
