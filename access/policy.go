@@ -165,49 +165,24 @@ var IdentityBasedMatcher = func(l *urn.URN, r *urn.URN) bool {
 		(l.Resource == r.Resource || (l.Resource == urn.Wildcard && r.Resource == urn.Wildcard) || (l.Resource == urn.Empty && r.Resource == urn.Empty) || r.Resource == urn.Wildcard || r.Resource == urn.Empty)
 }
 
-// NewEvaluator returns a new evaluator.
-func NewEvaluator(m Matcher, a Accessor) *Evaluator {
-	return &Evaluator{m, a}
+// UnimplementedAccessor is the default implementation of the Accessor interface.
+type UnimplementedAccessor struct{}
+
+// Allow returns true if the user is allowed to perform the action on the resource.
+func (u *UnimplementedAccessor) Allow(principal *urn.URN, ressource *urn.URN, action Action) (bool, error) {
+	return false, errors.New("not implemented")
 }
 
 // Accessor is the interface to allow or deny access.
 type Accessor interface {
 	// Allow returns true if the user is allowed to perform the action on the resource.
-	Allow(res *urn.URN, action Action, policies ...Policy) (bool, error)
+	Allow(principal *urn.URN, ressource *urn.URN, action Action) (bool, error)
 }
 
-// Evaluator evaluates the policies and returns true if the user is allowed to perform the action on the resource.
-type Evaluator struct {
-	Matcher
-	Accessor
-}
-
-// Allow returns true if the user is allowed to perform the action on the resource.
-func (d *Evaluator) Allow(res *urn.URN, action Action, policies ...Policy) (bool, error) {
-	var allow bool // default to deny
-
-	for _, p := range policies {
-		for _, r := range p.Rules {
-			for _, a := range r.Actions {
-				if a == action {
-					for _, rr := range r.Resources {
-						u, err := urn.Parse(rr.String())
-						if err != nil {
-							return false, err
-						}
-
-						if !d.Matcher(u, res) {
-							continue
-						}
-
-						allow = r.Effect == Allow
-					}
-				}
-			}
-		}
-	}
-
-	return allow, nil
+// Policer returns the policy for the given user.
+type Policer interface {
+	// Policies returns the policy for the given user.
+	Policies(principal *urn.URN) ([]*Policy, error)
 }
 
 // Rule is a set of conditions that define how a user can access a resource.

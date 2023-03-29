@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	pb "github.com/katallaxie/pkg/proto"
+	"github.com/katallaxie/pkg/urn"
 
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc"
@@ -15,11 +16,11 @@ import (
 const bufSize = 1024 * 1024
 
 // WithNoop ...
-func WithNoop(ctx context.Context, t *testing.T, f func(context.Context, *testing.T, func(context.Context, string) (net.Conn, error))) {
+func WithNoop(ctx context.Context, t *testing.T, access pb.AccessServer, f func(context.Context, *testing.T, func(context.Context, string) (net.Conn, error))) {
 	lis := bufconn.Listen(bufSize)
 	s := grpc.NewServer()
 
-	pb.RegisterAccessServer(s, NewNoop())
+	pb.RegisterAccessServer(s, access)
 	ctx, cancel := context.WithCancel(ctx)
 
 	g, ctx := errgroup.WithContext(ctx)
@@ -53,18 +54,79 @@ func WithNoop(ctx context.Context, t *testing.T, f func(context.Context, *testin
 	}
 }
 
-// NewNoop ...
-func NewNoop() pb.AccessServer {
-	n := new(noopServer)
-
-	return n
+type noopServer struct {
+	Accessor
+	pb.UnimplementedAccessServer
 }
 
-type noopServer struct {
-	pb.UnimplementedAccessServer
+type noopPolicer []*Policy
+
+func (n noopPolicer) Policies(principal *urn.URN) ([]*Policy, error) {
+	return n, nil
+}
+
+type noopAccessor struct {
+	Matcher
+	Policer
+}
+
+func (n *noopAccessor) Allow(principal *urn.URN, ressource *urn.URN, action Action) (bool, error) {
+	var allow bool // default to deny
+
+	policies, err := n.Policies(principal)
+	if err != nil {
+		return allow, err
+	}
+
+	for _, p := range policies {
+		for _, r := range p.Rules {
+			for _, a := range r.Actions {
+				if a == action {
+					for _, rr := range r.Resources {
+						u, err := urn.Parse(rr.String())
+						if err != nil {
+							return false, err
+						}
+
+						if !n.Matcher(u, ressource) {
+							continue
+						}
+
+						allow = r.Effect == Allow
+					}
+				}
+			}
+		}
+	}
+
+	return allow, nil
+}
+
+func newNoopServer(matcher Matcher, policies ...*Policy) *noopServer {
+	a := &noopAccessor{
+		Matcher: matcher,
+		Policer: noopPolicer(policies),
+	}
+
+	return &noopServer{a, pb.UnimplementedAccessServer{}}
 }
 
 // Check ...
 func (s *noopServer) Check(ctx context.Context, req *pb.Check_Request) (*pb.Check_Response, error) {
-	return &pb.Check_Response{Allowed: true}, nil
+	p, err := urn.FromProto(req.GetPrincipal())
+	if err != nil {
+		return nil, err
+	}
+
+	r, err := urn.FromProto(req.GetResource())
+	if err != nil {
+		return nil, err
+	}
+
+	allow, err := s.Allow(p, r, Action(req.GetAction()))
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.Check_Response{Allowed: allow}, nil
 }

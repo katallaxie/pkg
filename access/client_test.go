@@ -14,7 +14,25 @@ func TestNewClient(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	WithNoop(ctx, t, func(ctx context.Context, t *testing.T, dial func(context.Context, string) (net.Conn, error)) {
+	p := &Policy{
+		Version: DefaultVersion,
+		Rules: Rules{
+			{
+				ID:     "1",
+				Effect: Allow,
+				Resources: Resources{
+					"urn:cloud:access:eu-central-1:12345678910:root",
+				},
+				Actions: Actions{
+					"access:changePassword",
+				},
+			},
+		},
+	}
+
+	noop := newNoopServer(IdentityBasedMatcher, p)
+
+	WithNoop(ctx, t, noop, func(ctx context.Context, t *testing.T, dial func(context.Context, string) (net.Conn, error)) {
 		conn, err := grpc.DialContext(ctx, "bufnet", grpc.WithContextDialer(dial), grpc.WithTransportCredentials(insecure.NewCredentials()))
 		assert.NoError(t, err)
 
