@@ -70,7 +70,7 @@ type noopAccessor struct {
 	Policer
 }
 
-func (n *noopAccessor) Allow(principal *urn.URN, ressource *urn.URN, action Action) (bool, error) {
+func (n *noopAccessor) Allow(ctx context.Context, principal *urn.URN, ressource *urn.URN, action Action) (bool, error) {
 	var allow bool // default to deny
 
 	policies, err := n.Policies(principal)
@@ -123,7 +123,7 @@ func (s *noopServer) Check(ctx context.Context, req *pb.Check_Request) (*pb.Chec
 		return nil, err
 	}
 
-	allow, err := s.Allow(p, r, Action(req.GetAction()))
+	allow, err := s.Allow(ctx, p, r, Action(req.GetAction()))
 	if err != nil {
 		return nil, err
 	}

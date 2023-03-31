@@ -1,6 +1,7 @@
 package access
 
 import (
+	"context"
 	"encoding/json"
 	"strings"
 
@@ -176,7 +177,7 @@ func (u *UnimplementedAccessor) Allow(principal *urn.URN, ressource *urn.URN, ac
 // Accessor is the interface to allow or deny access.
 type Accessor interface {
 	// Allow returns true if the user is allowed to perform the action on the resource.
-	Allow(principal *urn.URN, ressource *urn.URN, action Action) (bool, error)
+	Allow(ctx context.Context, principal *urn.URN, ressource *urn.URN, action Action) (bool, error)
 }
 
 // Policer returns the policy for the given user.
