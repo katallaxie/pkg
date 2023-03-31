@@ -61,7 +61,7 @@ type noopServer struct {
 
 type noopPolicer []*Policy
 
-func (n noopPolicer) Policies(principal *urn.URN) ([]*Policy, error) {
+func (n noopPolicer) Policies(ctx context.Context, principal *urn.URN) ([]*Policy, error) {
 	return n, nil
 }
 
