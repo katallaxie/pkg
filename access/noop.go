@@ -73,7 +73,7 @@ type noopAccessor struct {
 func (n *noopAccessor) Allow(ctx context.Context, principal *urn.URN, ressource *urn.URN, action Action) (bool, error) {
 	var allow bool // default to deny
 
-	policies, err := n.Policies(principal)
+	policies, err := n.Policies(ctx, principal)
 	if err != nil {
 		return allow, err
 	}

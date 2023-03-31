@@ -183,7 +183,7 @@ type Accessor interface {
 // Policer returns the policy for the given user.
 type Policer interface {
 	// Policies returns the policy for the given user.
-	Policies(principal *urn.URN) ([]*Policy, error)
+	Policies(ctx context.Context, principal *urn.URN) ([]*Policy, error)
 }
 
 // Rule is a set of conditions that define how a user can access a resource.
