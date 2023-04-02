@@ -27,6 +27,8 @@ func (e *Error) Error() string {
 }
 
 // Append ...
+//
+//nolint:errorlint
 func Append(err error, errs ...error) *Error {
 	switch err := err.(type) {
 	case *Error:

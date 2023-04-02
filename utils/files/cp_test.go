@@ -23,7 +23,7 @@ func TestCopyFile(t *testing.T) {
 	f, err := os.Create(old)
 	assert.NoError(t, err)
 
-	oldBytes, err := f.Write([]byte("Hello World"))
+	oldBytes, err := f.WriteString("Hello World")
 	assert.NoError(t, err)
 	f.Close()
 
@@ -54,7 +54,7 @@ func TestCopyFileHomeDir(t *testing.T) {
 	f, err := os.Create(old)
 	assert.NoError(t, err)
 
-	oldBytes, err := f.Write([]byte("Hello World"))
+	oldBytes, err := f.WriteString("Hello World")
 	assert.NoError(t, err)
 	f.Close()
 
@@ -83,7 +83,7 @@ func TestCopyFileMkdir(t *testing.T) {
 	f, err := os.Create(old)
 	assert.NoError(t, err)
 
-	oldBytes, err := f.Write([]byte("Hello World"))
+	oldBytes, err := f.WriteString("Hello World")
 	assert.NoError(t, err)
 	f.Close()
 

@@ -115,17 +115,17 @@ func copy(src, dst string) (int64, error) {
 		return 0, fmt.Errorf("copyfile: %s is not a regular file", src)
 	}
 
-	source, err := os.Open(src)
+	source, err := os.Open(filepath.Clean(src))
 	if err != nil {
 		return 0, err
 	}
-	defer source.Close()
+	defer func() { _ = source.Close() }()
 
 	destination, err := os.Create(dst)
 	if err != nil {
 		return 0, err
 	}
-	defer destination.Close()
+	defer func() { _ = destination.Close() }()
 
 	n, err := io.Copy(destination, source)
 

@@ -2,6 +2,7 @@ package migrate
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"math"
 	"strconv"
@@ -182,12 +183,12 @@ func (s *SqlxMigrate) selectVersion(db *sqlx.DB, version int) (bool, error) {
 	}
 
 	err := db.Get(&row, fmt.Sprintf(`SELECT %s FROM %s WHERE %s=%s`, s.ColumnName(), s.TableName(), s.ColumnName(), strconv.Itoa(version)))
-	if err != nil && err != sql.ErrNoRows {
-		return false, fmt.Errorf("select current version: %w", err)
+	if errors.Is(err, sql.ErrNoRows) {
+		return false, nil
 	}
 
-	if err == sql.ErrNoRows {
-		return false, nil
+	if err != nil {
+		return false, fmt.Errorf("select current version: %w", err)
 	}
 
 	return true, nil

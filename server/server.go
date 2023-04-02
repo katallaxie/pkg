@@ -135,6 +135,8 @@ func (s *server) Listen(listener Listener, ready bool) {
 }
 
 // Wait ...
+//
+//nolint:gocyclo
 func (s *server) Wait() error {
 	// create ticker for interrupt signals
 	ticker := time.NewTicker(1 * time.Second)
