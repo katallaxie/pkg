@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 	"os/signal"
@@ -10,6 +11,11 @@ import (
 	"time"
 
 	o "github.com/katallaxie/pkg/opts"
+)
+
+var (
+	// ErrUnimplemented is returned when a listener is not implemented.
+	ErrUnimplemented = errors.New("unimplemented")
 )
 
 type token struct{}
@@ -62,14 +68,12 @@ type Server interface {
 // Unimplemented is the default implementation.
 type Unimplemented struct{}
 
-// Listen ...
-func (s *Unimplemented) Listen(listener Listener, ready bool) {}
-
-// Wait ...
-func (s *Unimplemented) Wait() error { return nil }
-
-// SetLimit ...
-func (s *Unimplemented) SetLimit(n int) {}
+// Start ...
+func (s *Unimplemented) Start(context.Context, ReadyFunc, RunFunc) func() error {
+	return func() error {
+		return ErrUnimplemented
+	}
+}
 
 // Listener is the interface to a listener,
 // so starting and shutdown of a listener,
@@ -101,7 +105,7 @@ type server struct {
 }
 
 // WithContext ...
-func WithContext(ctx context.Context, opts ...o.OptFunc) (Server, context.Context) {
+func WithContext(ctx context.Context, opts ...o.OptFunc) (*server, context.Context) {
 	ctx, cancel := context.WithCancel(ctx)
 
 	// new server
