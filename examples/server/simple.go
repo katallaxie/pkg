@@ -16,9 +16,7 @@ import (
 	"github.com/katallaxie/pkg/server"
 )
 
-type srv struct {
-	server.Service
-}
+type srv struct{}
 
 func (s *srv) Start(ctx context.Context, ready server.ReadyFunc, run server.RunFunc) func() error {
 	return func() error {
@@ -63,8 +61,6 @@ func main() {
 	s, _ := server.WithContext(ctx)
 	s.SetLimit(2)
 
-	service := &srv{}
-
 	s.Listen(&srv{}, true)
 	d := debug.New(
 		debug.WithPprof(),
@@ -72,7 +68,7 @@ func main() {
 	)
 	s.Listen(d, false)
 
-	log.Printf("starting %s", service.Lookup(server.ServiceEnv{}))
+	log.Printf("starting %s", server.Service.Lookup(server.ServiceEnv{}))
 	if err := s.Wait(); errors.Is(err, &server.Error{}) {
 		fmt.Println(err)
 		os.Exit(1)

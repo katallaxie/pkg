@@ -13,10 +13,8 @@ import (
 	o "github.com/katallaxie/pkg/opts"
 )
 
-var (
-	// ErrUnimplemented is returned when a listener is not implemented.
-	ErrUnimplemented = errors.New("unimplemented")
-)
+// ErrUnimplemented is returned when a listener is not implemented.
+var ErrUnimplemented = errors.New("unimplemented")
 
 type token struct{}
 
