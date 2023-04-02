@@ -23,6 +23,7 @@ You can find the documentation hosted on [godoc.org](https://godoc.org/github.co
 * [Protobuf](https://github.com/katallaxie/pkg/tree/main/proto): Protobuf
 * [Server](https://github.com/katallaxie/pkg/tree/main/server): Create servers
 * [Snowflake](https://github.com/katallaxie/pkg/tree/main/snowflake): Twitter Snowflake ID
+* [Streams](https://github.com/katallaxie/pkg/tree/main/streams): Kafka Streams
 * [URN](https://github.com/katallaxie/pkg/tree/main/urn): Add uniform resource name(s) (URNs)
 * [Utils](https://github.com/katallaxie/pkg/tree/main/utils): Small helper functions
 
