@@ -17,6 +17,7 @@ import (
 //
 //
 
+// Node is an interface for generating unique Snowflake IDs.
 type Node interface {
 	Generate() ID
 }
@@ -26,7 +27,9 @@ const (
 )
 
 var (
+	// NodeBits is the number of bits to use for Node.
 	NodeBits uint8 = 10
+	// StepBits is the number of bits to use for Step.
 	StepBits uint8 = 12
 )
 
@@ -45,24 +48,30 @@ type node struct {
 	sync.Mutex
 }
 
+// ID is a unique ID
 type ID int64
 
+// Int64 returns the ID as an int64
 func (i ID) Int64() int64 {
 	return int64(i)
 }
 
+// String returns the ID as a string
 func (i ID) String() string {
 	return strconv.FormatInt(int64(i), 10)
 }
 
+// Bytes returns the ID as a byte slice
 func (i ID) Bytes() []byte {
 	return []byte(i.String())
 }
 
+// Base64 returns the ID as a base64 encoded string
 func (i ID) Base64() string {
 	return base64.StdEncoding.EncodeToString(i.Bytes())
 }
 
+// Parsebase64 parses a base64 encoded string into an Snowflake ID.
 func ParseBase64(id string) (ID, error) {
 	b, err := base64.StdEncoding.DecodeString(id)
 	if err != nil {
@@ -72,21 +81,25 @@ func ParseBase64(id string) (ID, error) {
 	return ParseBytes(b)
 }
 
+// ParseString parses a string into an Snowflake ID.
 func ParseBytes(id []byte) (ID, error) {
 	i, err := strconv.ParseInt(string(id), 10, 64)
 	return ID(i), err
 }
 
+// ProtoMessage returns the ID as a protobuf Snowflake message.
 func (i ID) ProtoMessage() *pb.Snowflake {
 	return &pb.Snowflake{
 		Id: i.Int64(),
 	}
 }
 
+// ParseInt64 parses an int64 into an Snowflake ID.
 func ParseInt64(id int64) ID {
 	return ID(id)
 }
 
+// New returns a new Node that can be used to generate Snowflake IDs.
 func New(id int64) (Node, error) {
 	n := new(node)
 	n.id = id
@@ -107,6 +120,7 @@ func New(id int64) (Node, error) {
 	return n, nil
 }
 
+// Generate creates and returns a unique Snowflake ID.
 func (n *node) Generate() ID {
 	n.Lock()
 	defer n.Unlock()
