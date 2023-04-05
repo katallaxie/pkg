@@ -17,6 +17,7 @@ You can find the documentation hosted on [godoc.org](https://godoc.org/github.co
 
 * [Access](https://github.com/katallaxie/pkg/tree/main/access): Access System
 * [Debug](https://github.com/katallaxie/pkg/tree/main/debug): Add debugging
+* [Kubernetes](https://github.com/katallaxie/pkg/tree/main/k8s): Kubernetes
 * [Logger](https://github.com/katallaxie/pkg/tree/main/logger): Logging
 * [Migrate](https://github.com/katallaxie/pkg/tree/main/migrate): Run migrations
 * [Opts](https://github.com/katallaxie/pkg/tree/main/opts): Create options
