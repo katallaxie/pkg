@@ -10,7 +10,7 @@ import (
 
 func TestStore(t *testing.T) {
 	// Open a new store
-	s, err := store.Open("/path/to/db", nil)
+	s, err := store.Open("__deleteme.db", nil)
 	assert.NoError(t, err)
 	defer s.Close()
 

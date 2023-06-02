@@ -68,7 +68,7 @@ func (s *Store) Get(key []byte, value interface{}) error {
 
 	v, err := s.db.Get(key, nil)
 	if err != nil || value == nil {
-		return err
+		return ErrKeyNotExist
 	}
 
 	d := gob.NewDecoder(bytes.NewReader(v))
