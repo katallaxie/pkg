@@ -179,7 +179,7 @@ func (s *SqlxMigrate) createMigrationTable(db *sqlx.DB) error {
 
 func (s *SqlxMigrate) selectVersion(db *sqlx.DB, version int) (bool, error) {
 	var row struct {
-		Version int
+		Version int `db:"version"`
 	}
 
 	err := db.Get(&row, fmt.Sprintf(`SELECT %s FROM %s WHERE %s=%s`, s.ColumnName(), s.TableName(), s.ColumnName(), strconv.Itoa(version)))
