@@ -1,6 +1,7 @@
 package migrate_test
 
 import (
+	"os"
 	"testing"
 
 	"github.com/katallaxie/pkg/migrate"
@@ -11,6 +12,8 @@ import (
 )
 
 func withSqlite(t *testing.T, fn func(t *testing.T, db *sqlx.DB)) func(t *testing.T) {
+	_ = os.Remove("__deleteme.db")
+
 	db, err := sqlx.Connect("sqlite3", "__deleteme.db?mode=memory")
 	if err != nil {
 		t.Fatalf("Connect() err = %v; want nil", err)
