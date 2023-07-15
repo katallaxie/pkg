@@ -18,7 +18,7 @@ func init() {
 	LogSink = l
 }
 
-// NewLogSink ...
+// NewLogSink returns a new logger sink.
 func NewLogSink() (*zap.Logger, error) {
 	return zap.NewProduction()
 }
@@ -57,25 +57,27 @@ type logger struct {
 	sync.RWMutex
 }
 
-// Opt ...
+// Opt is a logger option.
 type Opt func(*Opts)
 
-// Opts ...
+// Opts are the options for the logger.
 type Opts struct {
 	Logger *zap.Logger
 }
 
-// Configure ...
-func (o *Opts) configure(opts ...Opt) {
+// Configure is configuring the logger.
+func (o *Opts) Configure(opts ...Opt) {
 	for _, opt := range opts {
 		opt(o)
 	}
 }
 
-// NewLogger ...
+// NewLogger is creating a new logger.
 func NewLogger(o ...Opt) Logger {
 	options := new(Opts)
-	options.configure(o...)
+	options.Logger = LogSink
+
+	options.Configure(o...)
 
 	l := new(logger)
 	l.opts = options
@@ -83,42 +85,42 @@ func NewLogger(o ...Opt) Logger {
 	return l
 }
 
-// Errorf ...
+// Errorf is logging an error.
 func (l *logger) Errorf(format string, v ...interface{}) {
 	l.logFunc(func(log *zap.Logger, format string, v ...interface{}) {
 		log.Sugar().Errorf(format, v...)
 	}, format, v...)
 }
 
-// Debugf ...
+// Debugf is logging a debug statement.
 func (l *logger) Debugf(format string, v ...interface{}) {
 	l.logFunc(func(log *zap.Logger, format string, v ...interface{}) {
 		log.Sugar().Debugf(format, v...)
 	}, format, v...)
 }
 
-// Fatalf ...
+// Fatalf is logging a fatal error.
 func (l *logger) Fatalf(format string, v ...interface{}) {
 	l.logFunc(func(log *zap.Logger, format string, v ...interface{}) {
 		log.Sugar().Fatalf(format, v...)
 	}, format, v...)
 }
 
-// Noticef ...
+// Noticef is logging a notice statement.
 func (l *logger) Noticef(format string, v ...interface{}) {
 	l.logFunc(func(log *zap.Logger, format string, v ...interface{}) {
 		log.Sugar().Infof(format, v...)
 	}, format, v...)
 }
 
-// Warnf ...
+// Warnf is logging a warning statement.
 func (l *logger) Warnf(format string, v ...interface{}) {
 	l.logFunc(func(log *zap.Logger, format string, v ...interface{}) {
 		log.Sugar().Warnf(format, v...)
 	}, format, v...)
 }
 
-// Tracef ...
+// Tracef is logging a trace statement.
 func (l *logger) Tracef(format string, v ...interface{}) {
 	l.logFunc(func(log *zap.Logger, format string, v ...interface{}) {
 		log.Sugar().Debugf(format, v...)
