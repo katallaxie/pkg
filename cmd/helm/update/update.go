@@ -8,7 +8,6 @@ import (
 	"github.com/katallaxie/pkg/logger"
 
 	"github.com/spf13/pflag"
-	"go.uber.org/zap"
 	"golang.org/x/mod/semver"
 	"helm.sh/helm/pkg/chartutil"
 )
@@ -22,7 +21,7 @@ func main() {
 	log.SetFlags(0)
 	log.SetOutput(os.Stderr)
 
-	zap.RedirectStdLog(logger.LogSink)
+	logger.RedirectStdLog(logger.LogSink)
 
 	f := &flags{}
 

@@ -2,70 +2,70 @@ package logger
 
 // Printf ..
 func Printf(format string, args ...interface{}) {
-	LogSink.Sugar().Infof(format, args...)
+	LogSink.Infof(format, args...)
 }
 
 // Debugf ...
 func Debugf(format string, args ...interface{}) {
-	LogSink.Sugar().Debugf(format, args...)
+	LogSink.Debugf(format, args...)
 }
 
 // Infof ...
 func Infof(format string, args ...interface{}) {
-	LogSink.Sugar().Infof(format, args...)
+	LogSink.Infof(format, args...)
 }
 
 // Errorf ...
 func Errorf(format string, args ...interface{}) {
-	LogSink.Sugar().Errorf(format, args...)
+	LogSink.Errorf(format, args...)
 }
 
 // Warnf ...
 func Warnf(format string, args ...interface{}) {
-	LogSink.Sugar().Warnf(format, args...)
+	LogSink.Warnf(format, args...)
 }
 
 // Panicf ...
 func Panicf(format string, args ...interface{}) {
-	LogSink.Sugar().Panicf(format, args...)
+	LogSink.Panicf(format, args...)
 }
 
 // Fatalf ...
 func Fatalf(format string, args ...interface{}) {
-	LogSink.Sugar().Fatalf(format, args...)
+	LogSink.Fatalf(format, args...)
 }
 
 // Debugw ...
 func Debugw(msg string, keysAndValues ...interface{}) {
-	LogSink.Sugar().Debugw(msg, keysAndValues...)
+	LogSink.Debugw(msg, keysAndValues...)
 }
 
 // Infow ...
 func Infow(msg string, keysAndValues ...interface{}) {
-	LogSink.Sugar().Infow(msg, keysAndValues...)
+	LogSink.Infow(msg, keysAndValues...)
 }
 
 // Warnw ...
 func Warnw(msg string, keysAndValues ...interface{}) {
-	LogSink.Sugar().Warnw(msg, keysAndValues...)
+	LogSink.Warnw(msg, keysAndValues...)
 }
 
 // Errorw ...
 func Errorw(msg string, keysAndValues ...interface{}) {
-	LogSink.Sugar().Errorw(msg, keysAndValues...)
+	LogSink.Errorw(msg, keysAndValues...)
 }
 
 // DPanicw ...
 func DPanicw(msg string, keysAndValues ...interface{}) {
-	LogSink.Sugar().DPanicw(msg, keysAndValues...)
+	LogSink.DPanicw(msg, keysAndValues...)
 }
 
 // Panicw ...
 func Panicw(msg string, keysAndValues ...interface{}) {
-	LogSink.Sugar().Panicw(msg, keysAndValues...)
+	LogSink.Panicw(msg, keysAndValues...)
 }
 
 // Fatalw ...
 func Fatalw(msg string, keysAndValues ...interface{}) {
-	LogSink.Sugar().Fatalw(msg, keysAndValues...)
+	LogSink.Fatalw(msg, keysAndValues...)
 }
