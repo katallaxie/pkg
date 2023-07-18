@@ -23,5 +23,5 @@ func TestLookupName(t *testing.T) {
 }
 
 func TestDefaultEnv(t *testing.T) {
-	assert.Equal(t, "server.test", Service.Name())
+	assert.Equal(t, "test", Service.Name())
 }
