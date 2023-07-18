@@ -119,6 +119,7 @@ func newServer(ctx context.Context, opts ...o.OptFunc[o.Opt, any]) *server {
 
 	s := new(server)
 	s.opts = options
+	s.opts.Configure(opts...)
 
 	ctx, cancel := context.WithCancel(ctx)
 	s.cancel = cancel
@@ -145,7 +146,7 @@ func (s *server) Wait() error {
 	ticker := time.NewTicker(1 * time.Second)
 	defer ticker.Stop()
 
-	signal.Notify(s.sys, syscall.SIGTERM, syscall.SIGKILL)
+	signal.Notify(s.sys, syscall.SIGTERM)
 	defer signal.Reset(syscall.SIGINT, syscall.SIGTERM)
 
 OUTTER:
