@@ -23,5 +23,8 @@ func TestLookupName(t *testing.T) {
 }
 
 func TestDefaultEnv(t *testing.T) {
+	os.Setenv("SERVICE_NAME", "test")
+	Service.lookup(DefaultEnv...)
+
 	assert.Equal(t, "test", Service.Name())
 }
