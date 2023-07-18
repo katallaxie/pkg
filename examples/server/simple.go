@@ -59,7 +59,7 @@ func main() {
 	defer cancel()
 
 	s, _ := server.WithContext(ctx)
-	s.SetLimit(2)
+	s.SetLimit(3)
 
 	s.Listen(&srv{}, true)
 	d := debug.New(

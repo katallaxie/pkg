@@ -26,7 +26,7 @@ const (
 
 // DebugOptions are the options for the debug listener.
 type Options struct {
-	o.Options
+	o.Options[o.Opt, any]
 }
 
 // Opts are the options for the debug listener
@@ -36,12 +36,12 @@ type Opts interface {
 	// Routes ...
 	Routes() map[string]http.Handler
 
-	o.Opts
+	o.Opts[o.Opt, any]
 }
 
 // NewOpts returns a new instance of the debug options.
-func NewOpts(opts ...o.OptFunc) Opts {
-	opts = append([]o.OptFunc{func(opts o.Opts) {
+func NewOpts(opts ...o.OptFunc[o.Opt, any]) Opts {
+	opts = append([]o.OptFunc[o.Opt, any]{func(opts o.Opts[o.Opt, any]) {
 		opts.Set(Addr, ":8443")
 		opts.Set(Routes, make(map[string]http.Handler))
 	}}, opts...)
@@ -67,7 +67,7 @@ func (o *Options) Routes() map[string]http.Handler {
 }
 
 // New ...
-func New(opts ...o.OptFunc) server.Listener {
+func New(opts ...o.OptFunc[o.Opt, any]) server.Listener {
 	options := NewOpts(opts...)
 
 	d := new(debug)
@@ -100,15 +100,15 @@ func (d *debug) Start(ctx context.Context, ready server.ReadyFunc, run server.Ru
 }
 
 // WithStatusAddr is adding this status addr as an option.
-func WithStatusAddr(addr string) o.OptFunc {
-	return func(opts o.Opts) {
+func WithStatusAddr(addr string) o.OptFunc[o.Opt, any] {
+	return func(opts o.Opts[o.Opt, any]) {
 		opts.Set(Addr, addr)
 	}
 }
 
 // WithPprof ...
-func WithPprof() o.OptFunc {
-	return func(opts o.Opts) {
+func WithPprof() o.OptFunc[o.Opt, any] {
+	return func(opts o.Opts[o.Opt, any]) {
 		v, _ := opts.Get(Routes)
 		vv := v.(map[string]http.Handler)
 
@@ -123,8 +123,8 @@ func WithPprof() o.OptFunc {
 }
 
 // WithPrometheusHandler is adding this prometheus http handler as an option.
-func WithPrometheusHandler(handler http.Handler) o.OptFunc {
-	return func(opts o.Opts) {
+func WithPrometheusHandler(handler http.Handler) o.OptFunc[o.Opt, any] {
+	return func(opts o.Opts[o.Opt, any]) {
 		v, _ := opts.Get(Routes)
 		vv := v.(map[string]http.Handler)
 

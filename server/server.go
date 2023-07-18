@@ -14,7 +14,7 @@ import (
 )
 
 // ErrUnimplemented is returned when a listener is not implemented.
-var ErrUnimplemented = errors.New("unimplemented")
+var ErrUnimplemented = errors.New("server: unimplemented")
 
 type token struct{}
 
@@ -37,7 +37,7 @@ func (s *Error) Error() string { return fmt.Sprintf("server: %s", s.Err) }
 // Unwrap ...
 func (s *Error) Unwrap() error { return s.Err }
 
-// NewError ...
+// NewError returns a new error.
 func NewError(err error) *Error {
 	return &Error{Err: err}
 }
@@ -99,11 +99,11 @@ type server struct {
 	ready chan bool
 	sys   chan os.Signal
 
-	opts o.Opts
+	opts o.Opts[o.Opt, any]
 }
 
 // WithContext ...
-func WithContext(ctx context.Context, opts ...o.OptFunc) (*server, context.Context) {
+func WithContext(ctx context.Context, opts ...o.OptFunc[o.Opt, any]) (*server, context.Context) {
 	ctx, cancel := context.WithCancel(ctx)
 
 	// new server
@@ -114,8 +114,8 @@ func WithContext(ctx context.Context, opts ...o.OptFunc) (*server, context.Conte
 	return s, ctx
 }
 
-func newServer(ctx context.Context, opts ...o.OptFunc) *server {
-	options := o.NewDefaultOpts(opts...)
+func newServer(ctx context.Context, opts ...o.OptFunc[o.Opt, any]) *server {
+	options := o.New[o.Opt, any]()
 
 	s := new(server)
 	s.opts = options
@@ -131,12 +131,13 @@ func newServer(ctx context.Context, opts ...o.OptFunc) *server {
 	return s
 }
 
-// Listen ...
+// Listen is adding a listener to the server.
 func (s *server) Listen(listener Listener, ready bool) {
 	s.listeners[listener] = ready
 }
 
-// Wait ...
+// Wait is waiting for the server to shutdown or fail.
+// The returned error is the first error that occurred from the listeners.
 //
 //nolint:gocyclo
 func (s *server) Wait() error {
@@ -144,23 +145,13 @@ func (s *server) Wait() error {
 	ticker := time.NewTicker(1 * time.Second)
 	defer ticker.Stop()
 
-	term, err := s.opts.Get(o.TermSignal)
-	if err != nil {
-		return err
-	}
-
-	kill, err := s.opts.Get(o.KillSignal)
-	if err != nil {
-		return err
-	}
-
-	signal.Notify(s.sys, term.(syscall.Signal), kill.(syscall.Signal))
+	signal.Notify(s.sys, syscall.SIGTERM, syscall.SIGKILL)
 	defer signal.Reset(syscall.SIGINT, syscall.SIGTERM)
 
 OUTTER:
 	// start all listeners in order
 	for l, ready := range s.listeners {
-		fn := func() {
+		readyFunc := func() {
 			r := ready
 
 			var readyOnce sync.Once
@@ -174,13 +165,16 @@ OUTTER:
 		goFn := func(f func() error) { _ = s.run(f) }
 
 		// schedule to routines
-		_ = s.run(l.Start(s.ctx, fn, goFn))
+		err := s.run(l.Start(s.ctx, readyFunc, goFn))
+		if err != nil {
+			return err
+		}
 
 		// this blocks until ready is called
 		if ready {
 			select {
 			case <-s.ready:
-				continue
+				continue OUTTER
 			case <-s.sys:
 				s.cancel()
 				break OUTTER
@@ -224,14 +218,11 @@ func (s *server) SetLimit(n int) {
 
 func (s *server) run(f func() error) error {
 	if s.sem != nil {
-		select {
-		case s.sem <- token{}:
-		default:
-			return fmt.Errorf("server: start more then %v listeners", len(s.sem))
-		}
+		s.sem <- token{}
 	}
 
 	s.wg.Add(1)
+
 	fn := func() {
 		defer s.done()
 
