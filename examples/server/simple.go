@@ -68,7 +68,7 @@ func main() {
 	)
 	s.Listen(d, false)
 
-	log.Printf("starting %s", server.Service.Lookup(server.ServiceEnv{}))
+	log.Printf("starting %s", server.Service.Name())
 	if err := s.Wait(); errors.Is(err, &server.Error{}) {
 		fmt.Println(err)
 		os.Exit(1)

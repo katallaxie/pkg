@@ -146,7 +146,7 @@ func (s *server) Wait() error {
 	ticker := time.NewTicker(1 * time.Second)
 	defer ticker.Stop()
 
-	signal.Notify(s.sys, syscall.SIGTERM)
+	signal.Notify(s.sys, syscall.SIGTERM, syscall.SIGINT)
 	defer signal.Reset(syscall.SIGINT, syscall.SIGTERM)
 
 OUTTER:

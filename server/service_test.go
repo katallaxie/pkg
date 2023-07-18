@@ -8,16 +8,20 @@ import (
 )
 
 func TestLookupName(t *testing.T) {
-	assert.Equal(t, "", Service.Name())
+	assert.Equal(t, "server.test", Service.Name())
 
 	os.Setenv("NAME", "test")
 
 	env := ServiceEnv{"NAME"}
 
-	Service.Lookup(env)
+	Service.Lookup(env...)
 	assert.Equal(t, "test", Service.Name())
 
 	os.Setenv("NAME", "foo")
-	Service.Lookup(env)
+	Service.Lookup(env...)
 	assert.NotEqual(t, "foo", Service.Name())
+}
+
+func TestDefaultEnv(t *testing.T) {
+	assert.Equal(t, "server.test", Service.Name())
 }
