@@ -1,13 +1,23 @@
 package slices
 
+import "github.com/katallaxie/pkg/utils"
+
 // Cut removes an element from a slice at a given position.
-func Cut[T comparable](start, end int, a ...T) []T {
-	return append(a[:start], a[end:]...)
+func Cut[T comparable](i, j int, a ...T) []T {
+	copy(a[i:], a[j:])
+	for k, n := len(a)-j+i, len(a); k < n; k++ {
+		a[k] = utils.Zero[T]()
+	}
+
+	return a[:len(a)-j+i]
 }
 
 // Delete removes an element from a slice by value.
-func Delete[T comparable](idx int, a ...T) []T {
-	return append(a[:idx], a[idx+1:]...)
+func Delete[T comparable](i int, a ...T) []T {
+	copy(a[i:], a[i+1:])
+	a[len(a)-1] = utils.Zero[T]()
+
+	return a[:len(a)-1]
 }
 
 // Push adds an element to the end of a slice.

@@ -11,7 +11,7 @@ import (
 func TestPop(t *testing.T) {
 	t.Parallel()
 
-	var tests = []struct {
+	tests := []struct {
 		name     string
 		input    []int
 		el       int
@@ -37,7 +37,7 @@ func TestPop(t *testing.T) {
 func TestPush(t *testing.T) {
 	t.Parallel()
 
-	var tests = []struct {
+	tests := []struct {
 		name     string
 		el       int
 		input    []int
@@ -62,7 +62,7 @@ func TestPush(t *testing.T) {
 func TestCut(t *testing.T) {
 	t.Parallel()
 
-	var tests = []struct {
+	tests := []struct {
 		name     string
 		start    int
 		end      int
@@ -89,7 +89,7 @@ func TestCut(t *testing.T) {
 func TestDelete(t *testing.T) {
 	t.Parallel()
 
-	var tests = []struct {
+	tests := []struct {
 		name     string
 		idx      int
 		input    []int
@@ -114,7 +114,7 @@ func TestDelete(t *testing.T) {
 func TestInsert(t *testing.T) {
 	t.Parallel()
 
-	var tests = []struct {
+	tests := []struct {
 		name     string
 		idx      int
 		el       int
