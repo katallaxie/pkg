@@ -110,3 +110,30 @@ func TestDelete(t *testing.T) {
 		})
 	}
 }
+
+func TestInsert(t *testing.T) {
+	t.Parallel()
+
+	var tests = []struct {
+		name     string
+		idx      int
+		el       int
+		input    []int
+		expected []int
+	}{
+		{
+			name:     "insert into slice",
+			idx:      1,
+			el:       4,
+			input:    []int{1, 2, 3},
+			expected: []int{1, 4, 2, 3},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := slices.Insert(tt.el, tt.idx, tt.input...)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}

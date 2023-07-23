@@ -19,3 +19,8 @@ func Push[T any](x T, a ...T) []T {
 func Pop[T any](a ...T) (T, []T) {
 	return a[len(a)-1], a[:len(a)-1]
 }
+
+// Insert adds an element at a given position in a slice.
+func Insert[T any](x T, idx int, a ...T) []T {
+	return append(a[:idx], append([]T{x}, a[idx:]...)...)
+}
