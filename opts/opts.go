@@ -8,7 +8,7 @@ import (
 )
 
 // ErrNotFound signals that this option is not set.
-var ErrNotFound = fmt.Errorf("option not found")
+var ErrNotFound = fmt.Errorf("options: option not found")
 
 // Opt is the identifier for the option.
 type Opt int
@@ -41,7 +41,7 @@ func New[K comparable, V any](opts ...OptFunc[K, V]) Opts[K, V] {
 	return o
 }
 
-// Get ...
+// Get is returning the value of the option.
 func (o *Options[K, V]) Get(opt Opt) (V, error) {
 	o.RLock()
 	defer o.RUnlock()
@@ -54,7 +54,7 @@ func (o *Options[K, V]) Get(opt Opt) (V, error) {
 	return v, nil
 }
 
-// Set ...
+// Set is setting the value of the option.
 func (o *Options[K, V]) Set(opt Opt, v V) {
 	o.Lock()
 	defer o.Unlock()
