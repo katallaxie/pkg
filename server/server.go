@@ -102,7 +102,7 @@ type server struct {
 	opts o.Opts[o.Opt, any]
 }
 
-// WithContext ...
+// WithContext is creating a new server with a context.
 func WithContext(ctx context.Context, opts ...o.OptFunc[o.Opt, any]) (*server, context.Context) {
 	ctx, cancel := context.WithCancel(ctx)
 
