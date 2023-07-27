@@ -34,3 +34,15 @@ func Pop[T comparable](a ...T) (T, []T) {
 func Insert[T comparable](x T, idx int, a ...T) []T {
 	return append(a[:idx], append([]T{x}, a[idx:]...)...)
 }
+
+// Filter removes all elements from a slice that satisfy a predicate.
+func Filter[T comparable](f func(T) bool, a ...T) []T {
+	b := a[:0]
+	for _, x := range a {
+		if !f(x) {
+			b = append(b, x)
+		}
+	}
+
+	return b
+}

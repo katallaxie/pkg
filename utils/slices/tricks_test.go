@@ -137,3 +137,28 @@ func TestInsert(t *testing.T) {
 		})
 	}
 }
+
+func TestFilter(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name     string
+		input    []int
+		expected []int
+	}{
+		{
+			name:     "filter slice",
+			input:    []int{1, 2, 3},
+			expected: []int{3},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := slices.Filter(func(el int) bool {
+				return el < 3
+			}, tt.input...)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
