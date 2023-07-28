@@ -10,7 +10,7 @@ import (
 func TestNewStatusCode(t *testing.T) {
 	t.Parallel()
 
-	var tests = []struct {
+	tests := []struct {
 		name         string
 		message      string
 		replyCode    smtp.ReplyCode
