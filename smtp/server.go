@@ -5,6 +5,7 @@ import (
 	"net"
 	"sync"
 
+	"github.com/katallaxie/pkg/group"
 	"github.com/katallaxie/pkg/server"
 )
 
@@ -56,19 +57,16 @@ func (m *mta) Start(ctx context.Context, ready server.ReadyFunc, run server.RunF
 			return err
 		}
 
+		g, _ := group.WithContext(ctx)
+
 		for {
 			c, err := l.Accept()
 			if err != nil {
 				return err
 			}
 
-			run(m.run(ctx, c))
+			s := newSession(c)
+			g.Run(s.Create())
 		}
-	}
-}
-
-func (m *mta) run(ctx context.Context, conn net.Conn) func() error {
-	return func() error {
-		return nil
 	}
 }

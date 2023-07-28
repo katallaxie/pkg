@@ -1,16 +1,24 @@
 package smtp
 
-// ReplyCode ...
+// ReplyCode is the status code for the SMTP server.
 type ReplyCode int
 
 const (
-	ReplyCodeSystemStatus                   = 211
-	ReplyCodeHelpMessage                    = 214
-	ReplyCodeServiceReady                   = 220
-	ReplyCodeServiceClosing                 = 221
-	ReplyCodeMailActionOkay                 = 250
-	ReplyCodeMailActionCompleted            = 250
-	ReplyCodeUserNotLocal                   = 251
+	// ReplyCodeSystemStatus is the status code for the system status.
+	ReplyCodeSystemStatus = 211
+	// ReplyCodeHelpMessage is the status code for the help message.
+	ReplyCodeHelpMessage = 214
+	// ReplyCodeServiceReady is the status code for the service ready.
+	ReplyCodeServiceReady = 220
+	// ReplyCodeServiceClosing is the status code for the service closing.
+	ReplyCodeServiceClosing = 221
+	// ReplyCodeAuthenticationSuccessful is the status code for the authentication successful.
+	ReplyCodeMailActionOkay = 250
+	// ReplyCodeUserNotLocal is the status code for the user not local.
+	ReplyCodeMailActionCompleted = 250
+	// ReplyCodeCannotVerifyUser is the status code for the cannot verify user.
+	ReplyCodeUserNotLocal = 251
+	// ReplyCodeStartMailInput is the status code for the start mail input.
 	ReplyCodeCannotVerifyUser               = 252
 	ReplyCodeStartMailInput                 = 354
 	ReplyCodeServiceNotAvailable            = 421

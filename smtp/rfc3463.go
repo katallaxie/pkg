@@ -2,6 +2,11 @@ package smtp
 
 import "fmt"
 
+var (
+	// EnhancedStatusCodeUnknown is the default value for the enhanced status code.
+	EnhancedStatusCodeUnknown EnhancedMailSystemStatusCode = EnhancedMailSystemStatusCode{-1, -1, -1}
+)
+
 // EnhancedStatusCodeClass represents a class of enhanced status codes.
 type EnhancedStatusCodeClass int
 
@@ -15,8 +20,23 @@ type EnhancedStatusCodeDetail int
 // mail system status codes from RFC 3463 (https://datatracker.ietf.org/doc/html/rfc3463).
 type EnhancedStatusCode [3]int
 
+// Class returns the class of the enhanced status code.
+func (e EnhancedStatusCode) Class() EnhancedStatusCodeClass {
+	return EnhancedStatusCodeClass(e[0])
+}
+
+// Subject returns the subject of the enhanced status code.
+func (e EnhancedStatusCode) Subject() EnhancedStatusCodeSubject {
+	return EnhancedStatusCodeSubject(e[1])
+}
+
+// Detail returns the detail of the enhanced status code.
+func (e EnhancedStatusCode) Detail() EnhancedStatusCodeDetail {
+	return EnhancedStatusCodeDetail(e[2])
+}
+
 // String returns the string representation of the enhanced status code.
-func (e EnhancedStatusCode) String() string {
+func (e EnhancedMailSystemStatusCode) String() string {
 	return fmt.Sprintf("%v.%v.%v", e[0], e[1], e[2])
 }
 
