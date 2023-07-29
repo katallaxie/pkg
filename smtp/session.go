@@ -2,6 +2,7 @@ package smtp
 
 import (
 	"context"
+	"crypto/tls"
 	"net"
 	"net/textproto"
 	"sync"
@@ -10,31 +11,33 @@ import (
 )
 
 // Session ...
-type Session interface {
-	// Create ...
-	Create() group.RunFunc
-}
-
-type session struct {
+type Session struct {
+	// Text is the textproto.Conn of the connection.
+	Text *textproto.Conn
+	// keep a reference to the connection so it can be used to create a TLS
+	// connection later
 	conn net.Conn
-	text *textproto.Conn
+	// tls indicates whether the connection is already in TLS mode
+	tls bool
 
 	sync.Mutex
 }
 
-// Create
-func (s *session) Create() group.RunFunc {
-	return func(ctx context.Context) {
-		defer func() {
-			s.conn.Close()
-		}()
-	}
-}
-
-func newSession(conn net.Conn) *session {
-	s := new(session)
+// NewSession...
+func NewSession(conn net.Conn) *Session {
+	s := new(Session)
+	s.Text = textproto.NewConn(conn)
 	s.conn = conn
-	s.text = textproto.NewConn(conn)
+	_, s.tls = conn.(*tls.Conn)
 
 	return s
+}
+
+// Serve ...
+func (s *Session) Serve() group.RunFunc {
+	return func(ctx context.Context) {
+		for {
+			s.Text.ReadLine()
+		}
+	}
 }

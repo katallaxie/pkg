@@ -65,8 +65,8 @@ func (m *mta) Start(ctx context.Context, ready server.ReadyFunc, run server.RunF
 				return err
 			}
 
-			s := newSession(c)
-			g.Run(s.Create())
+			s := NewSession(c)
+			g.Run(s.Serve())
 		}
 	}
 }
