@@ -81,6 +81,11 @@ func (g *Run) SetLimit(n int) {
 	g.sem = make(chan token, n)
 }
 
+// Wait is waiting for all go routines to finish.
+func (g *Run) Wait() {
+	g.wg.Wait()
+}
+
 // Shutdown is waiting for all go routines to finish.
 func (g *Run) Shutdown() error {
 	g.cancel()

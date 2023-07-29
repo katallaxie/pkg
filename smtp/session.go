@@ -3,6 +3,7 @@ package smtp
 import (
 	"context"
 	"crypto/tls"
+	"fmt"
 	"net"
 	"net/textproto"
 	"sync"
@@ -37,7 +38,13 @@ func NewSession(conn net.Conn) *Session {
 func (s *Session) Serve() group.RunFunc {
 	return func(ctx context.Context) {
 		for {
-			s.Text.ReadLine()
+			s.Text.PrintfLine("220 localhost ESMTP Service Ready")
+			l, err := s.Text.ReadLine()
+			if err != nil {
+				return
+			}
+
+			fmt.Println(l)
 		}
 	}
 }
