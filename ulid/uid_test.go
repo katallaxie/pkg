@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/katallaxie/pkg/ulid"
+
 	"github.com/stretchr/testify/assert"
 )
 

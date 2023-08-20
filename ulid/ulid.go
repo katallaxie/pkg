@@ -130,15 +130,15 @@ func (u ULID) AppendFormat(dst []byte) []byte {
 
 	if cap(dst)-length < Size {
 		// Allocate larger slice for ULID
-		capac := 2*cap(dst) + Size
+		capac := 2*cap(dst) + EncodedSize
 		dst2 := make([]byte, length, capac)
 		copy(dst2, dst)
 		dst = dst2
 	}
 
-	dst = dst[:length+Size]
+	dst = dst[:length+EncodedSize]
 
-	into := dst[length : length+Size]
+	into := dst[length : length+EncodedSize]
 	base32enc.Encode(into, u[:])
 
 	return dst
@@ -146,7 +146,7 @@ func (u ULID) AppendFormat(dst []byte) []byte {
 
 // Bytes returns text encoded bytes of receiving ULID.
 func (u ULID) Bytes() []byte {
-	dst := make([]byte, 0, Size)
+	dst := make([]byte, 0, EncodedSize)
 
 	return u.AppendFormat(dst)
 }
@@ -172,11 +172,11 @@ func (u *ULID) UnmarshalBinary(data []byte) error {
 
 // UnmarshalText decodes a ULID from text form.
 func (u *ULID) UnmarshalText(b []byte) error {
-	if len(b) != Size {
+	if len(b) != EncodedSize {
 		return ErrInvalidLength
 	}
 
-	switch c := b[Size-1]; c {
+	switch c := b[EncodedSize-1]; c {
 	case '0', '4', '8', 'C', 'G', 'M', 'R', 'W':
 	default:
 		return fmt.Errorf("%w: '%c' outside encoding range", ErrInvalidChar, c)
