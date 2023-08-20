@@ -17,10 +17,8 @@ var (
 	ErrMonotonicOverflow = errors.New("ulid: monotonic entropy overflow")
 )
 
-var (
-	// global monotonic reader.
-	reader *MonotonicReader
-)
+// global monotonic reader.
+var reader *MonotonicReader
 
 // SetSource updates the global MonotonicReader's source. Note that the default
 // MonotonicReader source is cryptographically safe (uses "crypto/rand.Reader").
@@ -84,7 +82,7 @@ func (r *MonotonicReader) Next(ts int64, dst *ULID) error {
 	case ts < r.ts:
 		return ErrNegativeTime
 
-	case ts >= int64(maxTime()):
+	case ts >= maxTime():
 		return ErrTimeOverflow
 
 	case ts == r.ovf:

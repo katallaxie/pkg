@@ -10,9 +10,7 @@ import (
 	"unsafe"
 )
 
-var (
-	mutex sync.Mutex
-)
+var mutex sync.Mutex
 
 // ULID is a 128-bit Universally Unique Lexicographically Sortable Identifier.
 type ULID [16]byte
