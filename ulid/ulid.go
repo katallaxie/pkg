@@ -1,12 +1,17 @@
 package ulid
 
 import (
+	"crypto/rand"
 	"encoding/base32"
 	"errors"
 	"fmt"
-	"io"
+	"sync"
 	"time"
 	"unsafe"
+)
+
+var (
+	mutex sync.Mutex
 )
 
 // ULID is a 128-bit Universally Unique Lexicographically Sortable Identifier.
@@ -41,12 +46,6 @@ var (
 	base32enc = base32.NewEncoding(Encoding).WithPadding(base32.NoPadding)
 )
 
-// MonotonicReader is a reader of monotonic time.
-type MonotonicReader interface {
-	MonotonicRead(ms int64, p []byte) error
-	io.Reader
-}
-
 // Max returns the max ULID.
 func Max() ULID {
 	return ULID{
@@ -59,7 +58,21 @@ func Max() ULID {
 
 // New returns a new ULID.
 func New() (ULID, error) {
+	mutex.Lock()
+	defer mutex.Unlock()
+
 	var u ULID
+	if reader == nil {
+		err := setreader(rand.Reader)
+		if err != nil {
+			return u, err
+		}
+	}
+
+	err := reader.Next(Now(), &u)
+	if err != nil {
+		return u, err
+	}
 
 	return u, nil
 }
@@ -91,18 +104,18 @@ func ParseString(s string) (ULID, error) {
 }
 
 // Time returns the time component of the ULID.
-func (u ULID) Time() uint64 {
-	return uint64(u[5]) | uint64(u[4])<<8 | uint64(u[3])<<16 |
-		uint64(u[2])<<24 | uint64(u[1])<<32 | uint64(u[0])<<40
+func (u ULID) Time() int64 {
+	return int64(u[5]) | int64(u[4])<<8 | int64(u[3])<<16 |
+		int64(u[2])<<24 | int64(u[1])<<32 | int64(u[0])<<40
 }
 
 // maxTime returns the max time component of the ULID.
-func maxTime() uint64 {
+func maxTime() int64 {
 	return ULID{0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0, 0}.Time()
 }
 
 // MaxTime returns the max time component of the ULID.
-func MaxTime() uint64 {
+func MaxTime() int64 {
 	return maxTime()
 }
 
