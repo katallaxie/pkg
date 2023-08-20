@@ -180,10 +180,9 @@ func (u *ULID) UnmarshalText(b []byte) error {
 		return fmt.Errorf("%w: '%c' outside encoding range", ErrInvalidChar, c)
 	}
 
-	// Base32 decode into receiving ULID.
 	_, err := base32enc.Decode(u[:], b)
 	if err != nil {
-		return fmt.Errorf("%w: %w", ErrInvalidULID, err)
+		return fmt.Errorf("%w: decoding base32 failed", err)
 	}
 
 	return nil
