@@ -182,7 +182,7 @@ func (u *ULID) UnmarshalText(b []byte) error {
 
 	_, err := base32enc.Decode(u[:], b)
 	if err != nil {
-		return fmt.Errorf("%w: decoding base32 failed", err)
+		return fmt.Errorf("%w: decoding base32 failed", ErrInvalidULID)
 	}
 
 	return nil
