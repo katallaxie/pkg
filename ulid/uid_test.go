@@ -14,16 +14,12 @@ func ExampleULID() {
 }
 
 func TestNew(t *testing.T) {
-	t.Parallel()
-
 	u, err := ulid.New()
 	assert.NoError(t, err)
 	assert.NotEmpty(t, u)
 }
 
 func TestNewReverse(t *testing.T) {
-	t.Parallel()
-
 	u, err := ulid.NewReverse()
 	assert.NoError(t, err)
 	assert.NotEmpty(t, u)
