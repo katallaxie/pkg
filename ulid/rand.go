@@ -76,6 +76,31 @@ func NewMonotonicReader(src io.Reader) (*MonotonicReader, error) {
 	return r, nil
 }
 
+// NextReverse calculates next available ULID for given Timestamp.
+func (r *MonotonicReader) NextReverse(ts int64, dst *ULID) error {
+	switch {
+	case ts >= maxTime():
+		return ErrTimeOverflow
+
+	case ts == r.ovf:
+		return ErrMonotonicOverflow
+	}
+
+	ts = maxTime() - ts
+
+	// Set ULID timestamp
+	// (converts to bigendian)
+	dst[0] = byte(ts >> 40)
+	dst[1] = byte(ts >> 32)
+	dst[2] = byte(ts >> 24)
+	dst[3] = byte(ts >> 16)
+	dst[4] = byte(ts >> 8)
+	dst[5] = byte(ts)
+
+	// Read entropy data into ULID
+	return r.entropy(ts, dst)
+}
+
 // Next calculates next available ULID for given Timestamp.
 func (r *MonotonicReader) Next(ts int64, dst *ULID) error {
 	switch {

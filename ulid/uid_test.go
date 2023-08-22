@@ -21,6 +21,14 @@ func TestNew(t *testing.T) {
 	assert.NotEmpty(t, u)
 }
 
+func TestNewReverse(t *testing.T) {
+	t.Parallel()
+
+	u, err := ulid.NewReverse()
+	assert.NoError(t, err)
+	assert.NotEmpty(t, u)
+}
+
 func BenchmarkNew(b *testing.B) {
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
@@ -29,10 +37,19 @@ func BenchmarkNew(b *testing.B) {
 	})
 }
 
+func BenchmarkNewReverse(b *testing.B) {
+	b.RunParallel(func(pb *testing.PB) {
+		for pb.Next() {
+			_, _ = ulid.NewReverse()
+		}
+	})
+}
+
 func BenchmarkMax(b *testing.B) {
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
 			_ = ulid.Max()
+			assert.NotEmpty(b, ulid.Max())
 		}
 	})
 }

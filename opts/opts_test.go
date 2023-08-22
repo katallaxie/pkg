@@ -7,6 +7,21 @@ import (
 	"go.uber.org/zap"
 )
 
+const (
+	Verbose Opt = iota
+)
+
+func BenchmarkOpts_Get(b *testing.B) {
+	b.RunParallel(func(pb *testing.PB) {
+		o := New[Opt, any]()
+		o.Set(Verbose, true)
+
+		for pb.Next() {
+			_, _ = o.Get(Verbose)
+		}
+	})
+}
+
 func TestConfig_NewDefaultOpts(t *testing.T) {
 	Verbose := Opt(0)
 

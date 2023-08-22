@@ -75,6 +75,27 @@ func New() (ULID, error) {
 	return u, nil
 }
 
+// NewReverse returns a new ULID with reverse time.
+func NewReverse() (ULID, error) {
+	mutex.Lock()
+	defer mutex.Unlock()
+
+	var u ULID
+	if reader == nil {
+		err := setreader(rand.Reader)
+		if err != nil {
+			return u, err
+		}
+	}
+
+	err := reader.NextReverse(Now(), &u)
+	if err != nil {
+		return u, err
+	}
+
+	return u, nil
+}
+
 // MustNew returns a new ULID.
 func MustNew() ULID {
 	u, err := New()
@@ -115,6 +136,11 @@ func maxTime() int64 {
 // MaxTime returns the max time component of the ULID.
 func MaxTime() int64 {
 	return maxTime()
+}
+
+// ReverseTime returns the reverse time component of the ULID.
+func ReverseTime(rms int64) int64 {
+	return maxTime() - rms
 }
 
 // Now returns a ULID with the given time.
