@@ -158,12 +158,12 @@ func (u ULID) String() string {
 }
 
 // UnmarshalBinary decodes a ULID from binary form.
-func (u *ULID) UnmarshalBinary(data []byte) error {
-	if len(data) != len(*u) {
+func (u *ULID) UnmarshalBinary(b []byte) error {
+	if len(b) != len(*u) {
 		return ErrDataSize
 	}
 
-	copy(data, u[:])
+	copy(b, u[:])
 
 	return nil
 }
