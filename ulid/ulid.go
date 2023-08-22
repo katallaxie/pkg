@@ -106,6 +106,16 @@ func MustNew() ULID {
 	return u
 }
 
+// MustNewReverse returns a new ULID with reverse time.
+func MustNewReverse() ULID {
+	u, err := NewReverse()
+	if err != nil {
+		panic(err)
+	}
+
+	return u
+}
+
 // Parse parses a ULID from a byte slice.
 func Parse(data []byte) (ULID, error) {
 	var u ULID
