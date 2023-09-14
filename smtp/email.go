@@ -1,5 +1,9 @@
 package smtp
 
+import (
+	"github.com/katallaxie/pkg/ulid"
+)
+
 // Header ...
 type Header string
 
@@ -30,4 +34,23 @@ type Message struct {
 	ID string `json:"id" yaml:"id"`
 	// Headers ...
 	Headers map[Header][]string `json:"headers" yaml:"headers"`
+}
+
+// SetID ...
+func (m *Message) SetID(id string) {
+	m.ID = id
+}
+
+// NewMessage ...
+func NewMessage() (*Message, error) {
+	id, err := ulid.NewReverse()
+	if err != nil {
+		return nil, err
+	}
+
+	m := new(Message)
+	m.SetID(id.String())
+	m.Headers = map[Header][]string{}
+
+	return m, nil
 }
