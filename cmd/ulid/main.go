@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	id, err := ulid.New()
+	id, err := ulid.NewReverse()
 	if err != nil {
 		log.Fatal(err)
 	}
