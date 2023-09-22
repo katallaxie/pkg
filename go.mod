@@ -18,7 +18,7 @@ require (
 	go.uber.org/zap v1.26.0
 	golang.org/x/mod v0.12.0
 	golang.org/x/sync v0.3.0
-	google.golang.org/grpc v1.58.1
+	google.golang.org/grpc v1.58.2
 	google.golang.org/protobuf v1.31.0
 	gopkg.in/yaml.v3 v3.0.1
 	helm.sh/helm v2.17.0+incompatible
