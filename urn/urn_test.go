@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestNew(t *testing.T) {
@@ -42,7 +43,7 @@ func TestNew(t *testing.T) {
 			urn, err := New(tc.namespace, tc.partition, tc.service, tc.region, tc.identifier, tc.resource)
 
 			if tc.expectedErr {
-				assert.Error(t, err)
+				require.Error(t, err)
 			}
 			assert.Equal(t, tc.expected, urn)
 		})

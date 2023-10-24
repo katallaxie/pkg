@@ -6,59 +6,60 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestFileExists(t *testing.T) {
 	tempDir, err := os.MkdirTemp(os.TempDir(), "empty_test")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	defer func() { _ = os.RemoveAll(tempDir) }()
 
 	ok, err := FileExists(tempDir)
-	assert.NoError(t, err)
-	assert.Equal(t, true, ok)
+	require.NoError(t, err)
+	assert.True(t, ok)
 
 	path := strings.Join([]string{tempDir, "example.txt"}, "/")
 	f, err := os.Create(path)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	f.Close()
 
 	ok, err = FileExists(path)
-	assert.NoError(t, err)
-	assert.Equal(t, true, ok)
+	require.NoError(t, err)
+	assert.True(t, ok)
 
 	err = os.Remove(path)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	ok, err = FileExists(path)
-	assert.Error(t, err)
-	assert.Equal(t, false, ok)
+	require.Error(t, err)
+	assert.False(t, ok)
 }
 
 func TestFileNotExists(t *testing.T) {
 	tempDir, err := os.MkdirTemp(os.TempDir(), "empty_test")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	defer func() { _ = os.RemoveAll(tempDir) }()
 
 	path := strings.Join([]string{tempDir, "example.txt"}, "/")
 	f, err := os.Create(path)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	f.Close()
 
 	ok, err := FileNotExists(path)
-	assert.NoError(t, err)
-	assert.Equal(t, false, ok)
+	require.NoError(t, err)
+	assert.False(t, ok)
 
 	err = os.Remove(path)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	ok, err = FileNotExists(path)
-	assert.NoError(t, err)
-	assert.Equal(t, true, ok)
+	require.NoError(t, err)
+	assert.True(t, ok)
 
 	path = strings.Join([]string{tempDir, "demo123"}, "/")
 	ok, err = FileNotExists(path)
-	assert.NoError(t, err)
-	assert.Equal(t, true, ok)
+	require.NoError(t, err)
+	assert.True(t, ok)
 }

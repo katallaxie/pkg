@@ -163,5 +163,5 @@ func (u *URN) ProtoMessage() *pb.ResourceURN {
 
 // FromProto returns the URN representation from a proto.ResourceURN representation.
 func FromProto(r *pb.ResourceURN) (*URN, error) {
-	return Parse(r.Canonical)
+	return Parse(r.GetCanonical())
 }

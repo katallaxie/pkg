@@ -7,11 +7,11 @@ import (
 )
 
 func TestZero(t *testing.T) {
-	assert.Equal(t, Zero[int](), 0)
-	assert.Equal(t, Zero[string](), "")
-	assert.Equal(t, Zero[bool](), false)
-	assert.Equal(t, Zero[interface{}](), nil)
-	assert.Equal(t, Zero[struct{}](), struct{}{})
+	assert.Equal(t, 0, Zero[int]())
+	assert.Equal(t, "", Zero[string]())
+	assert.Equal(t, false, Zero[bool]())
+	assert.Equal(t, nil, Zero[interface{}]())
+	assert.Equal(t, struct{}{}, Zero[struct{}]())
 }
 
 func TestIsZero(t *testing.T) {

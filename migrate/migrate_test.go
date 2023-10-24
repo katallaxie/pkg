@@ -9,6 +9,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func withSqlite(t *testing.T, fn func(t *testing.T, db *sqlx.DB)) func(t *testing.T) {
@@ -37,7 +38,7 @@ func TestMirgate(t *testing.T) {
 		migrator.Add(migrate.NewMigration(createUsersTable, dropUsersTable))
 
 		id, err := migrator.Migrate(db)
-		assert.Nil(t, err)
+		require.NoError(t, err)
 		assert.Equal(t, 1, id)
 	}))
 }

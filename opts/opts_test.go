@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 )
 
@@ -39,7 +40,7 @@ func TestConfig_NewDefaultOpts(t *testing.T) {
 			o.Set(tt.in, tt.out)
 
 			v, err := o.Get(tt.in)
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.out, v)
 		})
 	}
@@ -48,7 +49,7 @@ func TestConfig_NewDefaultOpts(t *testing.T) {
 func TestConfig_WithLogger(t *testing.T) {
 	logger, err := zap.NewProduction()
 	defer func() { _ = logger.Sync() }()
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	Logger := Opt(0)
 
@@ -56,6 +57,6 @@ func TestConfig_WithLogger(t *testing.T) {
 	o.Set(Logger, logger)
 
 	v, err := o.Get(0)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, v)
 }

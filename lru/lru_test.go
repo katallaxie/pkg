@@ -8,6 +8,7 @@ import (
 
 	"github.com/katallaxie/pkg/lru"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 const (
@@ -33,7 +34,7 @@ func TestCache(t *testing.T) {
 		t.Run(tt.desc, func(t *testing.T) {
 			l, err := lru.New(size)
 
-			assert.NoError(t, err)
+			require.NoError(t, err)
 
 			for i := 0; i < size; i++ {
 				l.Add(i, i, tt.ttl)
@@ -124,11 +125,11 @@ func TestCacheFetch(t *testing.T) {
 		t.Run(tt.desc, func(t *testing.T) {
 			l, err := lru.New(1)
 
-			assert.NoError(t, err)
+			require.NoError(t, err)
 
 			v, ok, err := l.Fetch(tt.key, tt.ttl, tt.call)
 			if err != nil {
-				assert.Error(t, err)
+				require.Error(t, err)
 				assert.Nil(t, v)
 				assert.False(t, ok)
 
@@ -137,7 +138,7 @@ func TestCacheFetch(t *testing.T) {
 
 			assert.Equal(t, tt.value, v)
 			assert.False(t, ok)
-			assert.NoError(t, err)
+			require.NoError(t, err)
 		})
 	}
 }
@@ -187,7 +188,7 @@ func TestCacheAdd(t *testing.T) {
 		t.Run(tt.desc, func(t *testing.T) {
 			l, err := lru.NewLRU(1)
 
-			assert.NoError(t, err)
+			require.NoError(t, err)
 
 			var ok bool
 			for _, item := range tt.items {
@@ -220,7 +221,7 @@ func BenchmarkCache_Rand(b *testing.B) {
 	for _, tt := range tests {
 		b.Run(tt.desc, func(b *testing.B) {
 			l, err := lru.New(tt.size)
-			assert.NoError(b, err)
+			require.NoError(b, err)
 
 			trace := make([]int64, b.N*2)
 			for i := 0; i < b.N*2; i++ {
@@ -268,7 +269,7 @@ func BenchmarkCache_Freq(b *testing.B) {
 	for _, tt := range tests {
 		b.Run(tt.desc, func(b *testing.B) {
 			l, err := lru.New(8192)
-			assert.NoError(b, err)
+			require.NoError(b, err)
 
 			trace := make([]int64, b.N*2)
 			for i := 0; i < b.N*2; i++ {

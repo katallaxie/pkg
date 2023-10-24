@@ -7,6 +7,7 @@ import (
 	"github.com/katallaxie/pkg/ulid"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func ExampleULID() {
@@ -15,13 +16,13 @@ func ExampleULID() {
 
 func TestNew(t *testing.T) {
 	u, err := ulid.New()
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotEmpty(t, u)
 }
 
 func TestNewReverse(t *testing.T) {
 	u, err := ulid.NewReverse()
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotEmpty(t, u)
 }
 
