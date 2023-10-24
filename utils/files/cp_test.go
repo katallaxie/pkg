@@ -10,99 +10,100 @@ import (
 	"github.com/katallaxie/pkg/utils/files"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestCopyFile(t *testing.T) {
 	tempDir, err := os.MkdirTemp(os.TempDir(), "empty_test")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	defer func() { _ = os.RemoveAll(tempDir) }()
 
 	old := strings.Join([]string{tempDir, "example.txt"}, "/")
 
 	f, err := os.Create(old)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	oldBytes, err := f.WriteString("Hello World")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	f.Close()
 
 	new := strings.Join([]string{tempDir, "example_copy.txt"}, "/")
 
 	newBytes, err := files.CopyFile(old, new, false)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	assert.Equal(t, oldBytes, int(newBytes))
 
 	b, err := os.ReadFile(new)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	assert.Equal(t, "Hello World", string(b))
 }
 
 func TestCopyFileHomeDir(t *testing.T) {
 	sr, err := user.Current()
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	tempDir, err := os.MkdirTemp(sr.HomeDir, "empty_test")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	defer func() { _ = os.RemoveAll(tempDir) }()
 
 	old := strings.Join([]string{tempDir, "example.txt"}, "/")
 
 	f, err := os.Create(old)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	oldBytes, err := f.WriteString("Hello World")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	f.Close()
 
 	new := strings.Join([]string{tempDir, "example_copy.txt"}, "/")
 	newHomeDir := strings.Replace(new, sr.HomeDir, "~", 1)
 
 	newBytes, err := files.CopyFile(old, newHomeDir, false)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	assert.Equal(t, oldBytes, int(newBytes))
 
 	b, err := os.ReadFile(new)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	assert.Equal(t, "Hello World", string(b))
 }
 
 func TestCopyFileMkdir(t *testing.T) {
 	tempDir, err := os.MkdirTemp(os.TempDir(), "empty_test")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	defer func() { _ = os.RemoveAll(tempDir) }()
 
 	old := strings.Join([]string{tempDir, "example.txt"}, "/")
 
 	f, err := os.Create(old)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	oldBytes, err := f.WriteString("Hello World")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	f.Close()
 
 	new := strings.Join([]string{tempDir, "whoopsy", "example_copy.txt"}, "/")
 
 	newBytes, err := files.CopyFile(old, new, true)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	assert.Equal(t, oldBytes, int(newBytes))
 
 	b, err := os.ReadFile(new)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	assert.Equal(t, "Hello World", string(b))
 }
 
 func TestPrependHomeFolder(t *testing.T) {
 	sr, err := user.Current()
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	tests := []struct {
 		desc        string
@@ -120,7 +121,7 @@ func TestPrependHomeFolder(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.desc, func(t *testing.T) {
 			p, err := files.PrependHomeFolder(tc.path)
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tc.expected, p)
 		})
 	}

@@ -7,6 +7,7 @@ import (
 	"github.com/katallaxie/pkg/urn"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestAction_String(t *testing.T) {
@@ -88,9 +89,9 @@ func TestPolicyUnmarshalJSON(t *testing.T) {
 			err := p.UnmarshalJSON(test.json)
 
 			if test.err != nil {
-				assert.EqualError(t, err, test.err.Error())
+				require.EqualError(t, err, test.err.Error())
 			} else {
-				assert.NoError(t, err)
+				require.NoError(t, err)
 			}
 
 			assert.Equal(t, test.pol.Version, p.Version)
@@ -155,9 +156,9 @@ func TestPolicyUnmarshalYAML(t *testing.T) {
 			err := p.UnmarshalYAML(test.yaml)
 
 			if test.err != nil {
-				assert.EqualError(t, err, test.err.Error())
+				require.EqualError(t, err, test.err.Error())
 			} else {
-				assert.NoError(t, err)
+				require.NoError(t, err)
 			}
 
 			assert.Equal(t, test.pol.Version, p.Version)
@@ -378,7 +379,7 @@ func BenchmarkIs_GroupResouceIdentifier(b *testing.B) {
 func TestResource_URN(t *testing.T) {
 	r := Resource("urn:cloud:machine:eu-central-1:1234567890:ulysses")
 	u, err := r.URN()
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, urn.Match("urn"), u.Namespace)
 	assert.Equal(t, urn.Match("cloud"), u.Partition)
 	assert.Equal(t, urn.Match("machine"), u.Service)

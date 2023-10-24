@@ -17,7 +17,7 @@ func TestIsDirEmpty(t *testing.T) {
 
 	isEmpty, err := IsDirEmpty(tempDir)
 	require.NoError(t, err)
-	assert.Equal(t, true, isEmpty)
+	assert.True(t, isEmpty)
 
 	f, err := os.Create(path.Join(tempDir, "test.txt"))
 	require.NoError(t, err)
@@ -26,5 +26,5 @@ func TestIsDirEmpty(t *testing.T) {
 
 	isEmpty, err = IsDirEmpty(tempDir)
 	require.NoError(t, err)
-	assert.Equal(t, false, isEmpty)
+	assert.False(t, isEmpty)
 }

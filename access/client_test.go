@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -34,15 +35,15 @@ func TestNewClient(t *testing.T) {
 
 	WithNoop(ctx, t, noop, func(ctx context.Context, t *testing.T, dial func(context.Context, string) (net.Conn, error)) {
 		conn, err := grpc.DialContext(ctx, "bufnet", grpc.WithContextDialer(dial), grpc.WithTransportCredentials(insecure.NewCredentials()))
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
 		defer conn.Close()
 
 		c, err := NewClient(conn)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
 		ok, err := c.Check(ctx, "urn:cloud:access:eu-central-1:12345678910:root", "urn:cloud:access:eu-central-1:12345678910:root", "access:changePassword")
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.True(t, ok)
 	})
 }
@@ -73,16 +74,16 @@ func BenchmarkNewClient(b *testing.B) {
 
 	WithNoop(ctx, &testing.T{}, noop, func(ctx context.Context, t *testing.T, dial func(context.Context, string) (net.Conn, error)) {
 		conn, err := grpc.DialContext(ctx, "bufnet", grpc.WithContextDialer(dial), grpc.WithTransportCredentials(insecure.NewCredentials()))
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
 		defer conn.Close()
 
 		c, err := NewClient(conn)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
 		for i := 0; i < b.N; i++ {
 			ok, err := c.Check(ctx, "urn:cloud:access:eu-central-1:12345678910:root", "urn:cloud:access:eu-central-1:12345678910:root", "access:changePassword")
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.True(t, ok)
 		}
 	})

@@ -287,7 +287,7 @@ func TestParse(t *testing.T) {
 			urn, err := Parse(tc.urnStr)
 
 			if tc.expectedErr {
-				assert.Error(t, err)
+				require.Error(t, err)
 			}
 
 			assert.Equal(t, tc.expected, urn)

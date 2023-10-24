@@ -40,7 +40,7 @@ func TestCache(t *testing.T) {
 				l.Add(i, i, tt.ttl)
 			}
 
-			assert.Equal(t, l.Len(), size)
+			assert.Equal(t, size, l.Len())
 
 			for i, k := range l.Keys() {
 				v, ok := l.Get(k)

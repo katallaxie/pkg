@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestWithContext(t *testing.T) {
@@ -56,13 +57,13 @@ func TestUnimplemented(t *testing.T) {
 
 	srv.Listen(l, false)
 	err := srv.Wait()
-	assert.Error(t, err)
-	assert.ErrorIs(t, err, ErrUnimplemented)
+	require.Error(t, err)
+	require.ErrorIs(t, err, ErrUnimplemented)
 }
 
 func TestNewError(t *testing.T) {
 	err := NewError(ErrUnimplemented)
 	assert.Implements(t, (*error)(nil), err)
-	assert.Error(t, err)
-	assert.ErrorIs(t, err, ErrUnimplemented)
+	require.Error(t, err)
+	require.ErrorIs(t, err, ErrUnimplemented)
 }

@@ -3,20 +3,20 @@ package snowflake
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestNew(t *testing.T) {
 	_, err := New(0)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	_, err = New(5000)
-	assert.Error(t, err)
+	require.Error(t, err)
 }
 
 func BenchmarkGenerate(b *testing.B) {
 	node, err := New(1)
-	assert.NoError(b, err)
+	require.NoError(b, err)
 
 	b.ReportAllocs()
 
@@ -41,7 +41,7 @@ func BenchmarkGenerateMaxSequence(b *testing.B) {
 
 func BenchmarkGenerateProtoMessage(b *testing.B) {
 	node, err := New(1)
-	assert.NoError(b, err)
+	require.NoError(b, err)
 
 	b.ReportAllocs()
 

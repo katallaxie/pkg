@@ -7,29 +7,30 @@ import (
 	"testing"
 
 	"github.com/katallaxie/pkg/env"
-	"github.com/stretchr/testify/assert"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestHasUser(t *testing.T) {
 	t.Parallel()
 
-	assert.NoError(t, env.HasUser()(context.Background()))
+	require.NoError(t, env.HasUser()(context.Background()))
 }
 
 func TestIsDirEmpty(t *testing.T) {
 	t.Parallel()
 
 	tempDir, err := os.MkdirTemp(os.TempDir(), "empty_test")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	defer func() { _ = os.RemoveAll(tempDir) }()
 
-	assert.NoError(t, env.IsDirEmpty(tempDir)(context.Background()))
+	require.NoError(t, env.IsDirEmpty(tempDir)(context.Background()))
 
 	f, err := os.Create(path.Join(tempDir, "test.txt"))
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	f.Close()
 
-	assert.Error(t, env.IsDirEmpty(tempDir)(context.Background()))
+	require.Error(t, env.IsDirEmpty(tempDir)(context.Background()))
 }
