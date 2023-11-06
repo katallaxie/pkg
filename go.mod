@@ -9,7 +9,7 @@ require (
 	github.com/golang/mock v1.7.0-rc.1
 	github.com/golangci/golangci-lint v1.55.1
 	github.com/jmoiron/sqlx v1.3.5
-	github.com/mattn/go-sqlite3 v1.14.17
+	github.com/mattn/go-sqlite3 v1.14.18
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.17.0
 	github.com/spf13/pflag v1.0.5
