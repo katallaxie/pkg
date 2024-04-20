@@ -10,18 +10,16 @@ on:
   pull_request:
     branches:
       - main
-
-permissions:
-  id-token: write
-  contents: read
-  checks: write
+  workflow_call:
 
 jobs:
   test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        go: [ 1.21.x, 1.20.x, 1.19.x ]
+        go: [ 1.22.x ,1.21.x, 1.20.x, 1.19.x ]
+    permissions:
+        checks: write
     steps:
       - uses: actions/checkout@v4
       - uses: arduino/setup-protoc@v3
