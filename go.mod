@@ -8,7 +8,7 @@ require (
 	github.com/go-sql-driver/mysql v1.8.1
 	github.com/golang/mock v1.7.0-rc.1
 	github.com/golangci/golangci-lint v1.57.2
-	github.com/jmoiron/sqlx v1.3.5
+	github.com/jmoiron/sqlx v1.4.0
 	github.com/mattn/go-sqlite3 v1.14.22
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.18.0
