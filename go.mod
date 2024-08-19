@@ -1,6 +1,7 @@
 module github.com/katallaxie/pkg
 
 go 1.21
+toolchain go1.22.5
 
 require (
 	github.com/go-chi/chi v4.1.2+incompatible
@@ -22,7 +23,7 @@ require (
 	google.golang.org/protobuf v1.34.2
 	gopkg.in/yaml.v3 v3.0.1
 	helm.sh/helm v2.17.0+incompatible
-	mvdan.cc/gofumpt v0.6.0
+	mvdan.cc/gofumpt v0.7.0
 )
 
 require (
