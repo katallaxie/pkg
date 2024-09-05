@@ -1,6 +1,7 @@
 module github.com/katallaxie/pkg
 
 go 1.21
+toolchain go1.22.5
 
 require (
 	github.com/go-chi/chi v4.1.2+incompatible
@@ -16,7 +17,7 @@ require (
 	github.com/stretchr/testify v1.9.0
 	github.com/syndtr/goleveldb v1.0.0
 	go.uber.org/zap v1.27.0
-	golang.org/x/mod v0.20.0
+	golang.org/x/mod v0.21.0
 	golang.org/x/sync v0.8.0
 	google.golang.org/grpc v1.63.2
 	google.golang.org/protobuf v1.34.2
