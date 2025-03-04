@@ -57,9 +57,9 @@ dockers:
     ids:
       - waitfor
     image_templates:
-      - "ghcr.io/zeiss/{{.ProjectName}}/waitfor:latest"
-      - "ghcr.io/zeiss/{{.ProjectName}}/waitfor:{{.Tag}}"
-      - "ghcr.io/zeiss/{{.ProjectName}}/waitfor"
+      - "ghcr.io/katallaxie/{{.ProjectName}}/waitfor:latest"
+      - "ghcr.io/katallaxie/{{.ProjectName}}/waitfor:{{.Tag}}"
+      - "ghcr.io/katallaxie/{{.ProjectName}}/waitfor"
     build_flag_templates:
       - "--pull"
       - "--label=org.opencontainers.image.created={{.Date}}"
@@ -74,9 +74,9 @@ dockers:
     ids:
       - runproc
     image_templates:
-      - "ghcr.io/zeiss/{{.ProjectName}}/runproc:latest"
-      - "ghcr.io/zeiss/{{.ProjectName}}/runproc:{{.Tag}}"
-      - "ghcr.io/zeiss/{{.ProjectName}}/runproc"
+      - "ghcr.io/katallaxie/{{.ProjectName}}/runproc:latest"
+      - "ghcr.io/katallaxie/{{.ProjectName}}/runproc:{{.Tag}}"
+      - "ghcr.io/katallaxie/{{.ProjectName}}/runproc"
     build_flag_templates:
       - "--pull"
       - "--label=org.opencontainers.image.created={{.Date}}"
