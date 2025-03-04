@@ -9,8 +9,6 @@ import (
 	"sync"
 	"syscall"
 	"time"
-
-	o "github.com/katallaxie/pkg/opts"
 )
 
 // ErrUnimplemented is returned when a listener is not implemented.
@@ -26,20 +24,20 @@ type ReadyFunc func()
 // to the server.
 type RunFunc func(func() error)
 
-// Error ...
-type Error struct {
+// ServerError ...
+type ServerError struct {
 	Err error
 }
 
-// Error ...
-func (s *Error) Error() string { return fmt.Sprintf("server: %s", s.Err) }
+// Error implements the error interface.
+func (s *ServerError) Error() string { return fmt.Sprintf("server: %s", s.Err) }
 
 // Unwrap ...
-func (s *Error) Unwrap() error { return s.Err }
+func (s *ServerError) Unwrap() error { return s.Err }
 
-// NewError returns a new error.
-func NewError(err error) *Error {
-	return &Error{Err: err}
+// NewServerError returns a new error.
+func NewServerError(err error) *ServerError {
+	return &ServerError{Err: err}
 }
 
 // Server is the interface to be implemented
@@ -98,28 +96,22 @@ type server struct {
 
 	ready chan bool
 	sys   chan os.Signal
-
-	opts o.Opts[o.Opt, any]
 }
 
 // WithContext is creating a new server with a context.
-func WithContext(ctx context.Context, opts ...o.OptFunc[o.Opt, any]) (*server, context.Context) {
+func WithContext(ctx context.Context) (*server, context.Context) {
 	ctx, cancel := context.WithCancel(ctx)
 
 	// new server
-	s := newServer(ctx, opts...)
+	s := newServer(ctx)
 	s.cancel = cancel
 	s.ctx = ctx
 
 	return s, ctx
 }
 
-func newServer(ctx context.Context, opts ...o.OptFunc[o.Opt, any]) *server {
-	options := o.New[o.Opt, any]()
-
+func newServer(ctx context.Context) *server {
 	s := new(server)
-	s.opts = options
-	s.opts.Configure(opts...)
 
 	ctx, cancel := context.WithCancel(ctx)
 	s.cancel = cancel
@@ -150,7 +142,7 @@ func (s *server) Wait() error {
 	defer signal.Reset(syscall.SIGINT, syscall.SIGTERM)
 
 OUTTER:
-	// start all listeners in order
+	//
 	for l, ready := range s.listeners {
 		readyFunc := func() {
 			r := ready
@@ -163,13 +155,10 @@ OUTTER:
 			})
 		}
 
-		goFn := func(f func() error) { _ = s.run(f) }
+		goFn := func(f func() error) { s.run(f) }
 
 		// schedule to routines
-		err := s.run(l.Start(s.ctx, readyFunc, goFn))
-		if err != nil {
-			return err
-		}
+		s.run(l.Start(s.ctx, readyFunc, goFn))
 
 		// this blocks until ready is called
 		if ready {
@@ -185,7 +174,6 @@ OUTTER:
 		}
 	}
 
-	// this is the main loop
 	for {
 		select {
 		case <-ticker.C:
@@ -194,8 +182,8 @@ OUTTER:
 			// cancel the context of the routines
 			s.cancel()
 		case <-s.ctx.Done():
-			if err := s.ctx.Err(); err != nil {
-				return NewError(s.err)
+			if s.err != nil {
+				return s.err
 			}
 
 			return nil
@@ -217,7 +205,7 @@ func (s *server) SetLimit(n int) {
 	s.sem = make(chan token, n)
 }
 
-func (s *server) run(f func() error) error {
+func (s *server) run(f func() error) {
 	if s.sem != nil {
 		s.sem <- token{}
 	}
@@ -238,8 +226,6 @@ func (s *server) run(f func() error) error {
 	}
 
 	go fn()
-
-	return nil
 }
 
 func (s *server) done() {
