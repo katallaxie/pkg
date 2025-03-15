@@ -42,7 +42,7 @@ func CopyEmbedFile(src, dst string, fs embed.FS) (int64, error) {
 		return size, err
 	}
 
-	dest, err := os.Create(dst)
+	dest, err := os.Create(filepath.Clean(dst))
 	if err != nil {
 		return size, err
 	}
