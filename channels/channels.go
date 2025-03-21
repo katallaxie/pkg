@@ -71,3 +71,13 @@ func Filter[T any](input <-chan T, fn func(T) bool) <-chan T {
 
 	return c
 }
+
+// Slice slices the channel into a slice.
+func Slice[T any](ch <-chan any) []T {
+	var result []T
+	for e := range ch {
+		result = append(result, e.(T))
+	}
+
+	return result
+}
