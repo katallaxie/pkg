@@ -1,6 +1,8 @@
 package channels
 
-import "sync"
+import (
+	"sync"
+)
 
 // Join joins multiple channels into one.
 func Join[T any](inputs ...<-chan T) <-chan T {
@@ -74,7 +76,7 @@ func Filter[T any](input <-chan T, fn func(T) bool) <-chan T {
 
 // Slice slices the channel into a slice.
 func Slice[T any](ch <-chan any) []T {
-	var result []T
+	result := make([]T, 0)
 	for e := range ch {
 		result = append(result, e.(T))
 	}
