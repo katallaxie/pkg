@@ -81,3 +81,10 @@ func Slice[T any](ch <-chan any) []T {
 
 	return result
 }
+
+// Channel is a helper function to send a slice to a channel.
+func Channel[T any](source []T, in chan any) {
+	for _, e := range source {
+		in <- e
+	}
+}
