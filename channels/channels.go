@@ -52,10 +52,16 @@ func Broadcast[T any](input <-chan T, outputs ...chan<- T) {
 
 // Drain drains the channel until it is closed.
 func Drain[T any](input <-chan T) {
-	go func() {
-		for range input {
+	if input == nil {
+		return
+	}
+
+	for {
+		_, ok := <-input
+		if !ok {
+			break
 		}
-	}()
+	}
 }
 
 // Filter filters the channel with the given function.
