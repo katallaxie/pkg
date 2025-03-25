@@ -171,3 +171,10 @@ func Reverse[T any](slice []T) []T {
 
 	return slice
 }
+
+// Foreach applies a function to all elements in a slice.
+func Foreach[T any](fn func(v T), slice ...T) {
+	for _, v := range slice {
+		fn(v)
+	}
+}
