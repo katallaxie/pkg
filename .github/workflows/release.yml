@@ -31,9 +31,6 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version-file: ./tools/go.mod
-          cache-dependency-path: |
-            go.sum
-            tools/go.sum
       - uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772
         with:
           registry: ${{ env.REGISTRY }}
