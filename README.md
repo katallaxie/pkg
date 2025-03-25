@@ -71,6 +71,16 @@ There is the implementation of various operators.
 utilx.IfElse(cond, 100, 0)
 ```
 
+## Optional
+
+There is also the `Option` type which is a wrapper around a value that can be `nil`.
+
+```go
+// Option is a wrapper around a value that can be nil.
+a := optional.Some(100)
+fmt.Println(a.String()) // true
+```
+
 ## Databases
 
 There are also more complex tools like the `Database` interface which enables to easliy implement database wrappers.
