@@ -457,3 +457,28 @@ func TestAppend(t *testing.T) {
 		})
 	}
 }
+
+func TestForEach(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name     string
+		input    []int
+		expected []int
+	}{
+		{
+			name:     "for each element in slice",
+			input:    []int{1, 2, 3},
+			expected: []int{2, 3, 4},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			slices.ForEach(func(v int, i int) {
+				tt.input[i] = v + 1
+			}, tt.input...)
+			assert.Equal(t, tt.expected, tt.input)
+		})
+	}
+}
