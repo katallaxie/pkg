@@ -27,8 +27,6 @@ type Actionable interface {
 	GetType() Action
 }
 
-var _ Actionable = (*action)(nil)
-
 // NewAction creates a new action.
 func NewAction(actionType Action, payload Payload) Actionable {
 	return &action{
@@ -83,10 +81,8 @@ type store struct {
 	sync.RWMutex
 }
 
-var _ Storable = (*store)(nil)
-
 // New creates a new store.
-func New(initialState State, reducers ...Reducable) *store {
+func New(initialState State, reducers ...Reducable) Storable {
 	s := new(store)
 	s.state = initialState
 	s.reducers = slices.Append(reducers, s.reducers...)
