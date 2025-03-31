@@ -29,6 +29,14 @@ type Actionable interface {
 
 var _ Actionable = (*action)(nil)
 
+// NewAction creates a new action.
+func NewAction(actionType Action, payload Payload) Actionable {
+	return &action{
+		actionType: actionType,
+		payload:    payload,
+	}
+}
+
 type action struct {
 	actionType Action
 	payload    Payload
