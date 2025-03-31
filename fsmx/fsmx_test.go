@@ -4,20 +4,40 @@ import (
 	"testing"
 
 	"github.com/katallaxie/pkg/fsmx"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestNew(t *testing.T) {
+	t.Parallel()
+
 	s := fsmx.New(nil)
 	require.NotNil(t, s)
 }
 
+func TestNewAction(t *testing.T) {
+	t.Parallel()
+
+	a := fsmx.NewAction(1, "foo")
+	require.NotNil(t, a)
+	assert.Equal(t, fsmx.ActionType(1), a.Type())
+	assert.Equal(t, "foo", a.Payload())
+
+	a.Payload("bar")
+	assert.Equal(t, "bar", a.Payload())
+
+	a.Type(2)
+	assert.Equal(t, fsmx.ActionType(2), a.Type())
+}
+
 func TestDispatch(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name     string
 		state    fsmx.State
 		expected fsmx.State
-		reducers []fsmx.Reducable
+		reducers []fsmx.Reducer
 	}{
 		{
 			name: "non nil state",
@@ -31,8 +51,8 @@ func TestDispatch(t *testing.T) {
 			}{
 				Text: "bar",
 			},
-			reducers: []fsmx.Reducable{
-				func(prev fsmx.State, action fsmx.Actionable) fsmx.State {
+			reducers: []fsmx.Reducer{
+				func(prev fsmx.State, action fsmx.Action) fsmx.State {
 					return struct {
 						Text string
 					}{

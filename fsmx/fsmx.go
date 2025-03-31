@@ -6,29 +6,25 @@ import (
 	"github.com/katallaxie/pkg/slices"
 )
 
-// Payload is the type of the payload of the action.
-type Payload interface{}
+// ActionPayload is the type of the payload of the action.
+type ActionPayload interface{}
 
 // Action is the type of the action of the FSM.
-type Action int
+type ActionType int
 
 // State is the type of the state of the FSM.
 type State interface{}
 
 // Actionable is the interface that wraps the basic Action methods.
-type Actionable interface {
-	// SetPayload sets the payload of the action
-	SetPayload(payload Payload)
-	// GetPayload gets the payload of the action
-	GetPayload() Payload
-	// SetType sets the type of the action
-	SetType(actionType Action)
-	// GetType gets the type of the action
-	GetType() Action
+type Action interface {
+	// Paylog gets the payload of the action
+	Payload(p ...ActionPayload) ActionPayload
+	// Type gets the type of the action
+	Type(a ...ActionType) ActionType
 }
 
 // NewAction creates a new action.
-func NewAction(actionType Action, payload Payload) Actionable {
+func NewAction(actionType ActionType, payload ActionPayload) Action {
 	return &action{
 		actionType: actionType,
 		payload:    payload,
@@ -36,37 +32,35 @@ func NewAction(actionType Action, payload Payload) Actionable {
 }
 
 type action struct {
-	actionType Action
-	payload    Payload
+	actionType ActionType
+	payload    ActionPayload
 }
 
-// GetPayload gets the payload of the action
-func (a *action) GetPayload() Payload {
+// Payload gets the payload of the action
+func (a *action) Payload(payloads ...ActionPayload) ActionPayload {
+	if slices.Len(payloads) > 0 {
+		a.payload = slices.First(payloads...)
+	}
+
 	return a.payload
 }
 
-// SetPayload sets the payload of the action
-func (a *action) SetPayload(payload Payload) {
-	a.payload = payload
-}
+// Type gets the type of the action
+func (a *action) Type(types ...ActionType) ActionType {
+	if slices.Len(types) > 0 {
+		a.actionType = slices.First(types...)
+	}
 
-// GetType gets the type of the action
-func (a *action) GetType() Action {
 	return a.actionType
 }
 
-// SetType sets the type of the action
-func (a *action) SetType(actionType Action) {
-	a.actionType = actionType
-}
+// Reducer is the type of the reducer of the FSM.
+type Reducer func(prev State, action Action) State
 
-// Reducable is the type of the reducer of the FSM.
-type Reducable func(prev State, action Actionable) State
-
-// Storable is the interface that wraps the basic Store methods.
-type Storable interface {
+// Store is the type of the store of the FSM.
+type Store interface {
 	// Dispatch dispatches an event to the FSM.
-	Dispatch(action Actionable)
+	Dispatch(actions ...Action)
 	// Subscribe subscribes to the store.
 	Subscribe() <-chan State
 	// Drain drains the store.
@@ -75,14 +69,14 @@ type Storable interface {
 
 type store struct {
 	state       State
-	reducers    []Reducable
+	reducers    []Reducer
 	subscribers []chan<- State
 
 	sync.RWMutex
 }
 
 // New creates a new store.
-func New(initialState State, reducers ...Reducable) Storable {
+func New(initialState State, reducers ...Reducer) Store {
 	s := new(store)
 	s.state = initialState
 	s.reducers = slices.Append(reducers, s.reducers...)
@@ -91,17 +85,19 @@ func New(initialState State, reducers ...Reducable) Storable {
 }
 
 // Dispatch dispatches an event to the FSM.
-func (s *store) Dispatch(action Actionable) {
+func (s *store) Dispatch(actions ...Action) {
 	s.Lock()
 	defer s.Unlock()
 
-	for _, reducer := range s.reducers {
-		s.state = reducer(s.state, action)
+	for _, action := range actions {
+		for _, reducer := range s.reducers {
+			s.state = reducer(s.state, action)
 
-		for _, sub := range s.subscribers {
-			go func(sub chan<- State) { // background
-				sub <- s.state
-			}(sub)
+			for _, sub := range s.subscribers {
+				go func(sub chan<- State) { // background
+					sub <- s.state
+				}(sub)
+			}
 		}
 	}
 }
