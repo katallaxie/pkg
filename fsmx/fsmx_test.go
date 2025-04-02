@@ -35,26 +35,26 @@ func TestNewAction(t *testing.T) {
 func TestDispatch(t *testing.T) {
 	t.Parallel()
 
+	type noopState struct {
+		Text string
+	}
+
 	tests := []struct {
 		name     string
-		state    fsmx.State
+		state    noopState
 		expected fsmx.State
-		reducers []fsmx.Reducer
+		reducers []fsmx.Reducer[noopState]
 	}{
 		{
 			name: "non nil state",
-			state: struct {
-				Text string
-			}{
+			state: noopState{
 				Text: "foo",
 			},
-			expected: struct {
-				Text string
-			}{
+			expected: noopState{
 				Text: "bar",
 			},
-			reducers: []fsmx.Reducer{
-				func(prev fsmx.State, action fsmx.Action) fsmx.State {
+			reducers: []fsmx.Reducer[noopState]{
+				func(prev noopState, action fsmx.Action) noopState {
 					return struct {
 						Text string
 					}{

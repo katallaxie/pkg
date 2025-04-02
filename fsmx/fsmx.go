@@ -63,14 +63,14 @@ func (a *action) Type(types ...ActionType) ActionType {
 }
 
 // Reducer is the type of the reducer of the FSM.
-type Reducer func(prev State, action Action) State
+type Reducer[S State] func(prev S, action Action) S
 
 // Store is the type of the store of the FSM.
 type Store[S State] interface {
 	// Dispatch dispatches an event to the FSM.
 	Dispatch(actions ...Action)
 	// State gets the current state of the store.
-	State(s ...State) S
+	State(s ...S) S
 	// Drain drains the store.
 	Cancel()
 
@@ -80,15 +80,15 @@ type Store[S State] interface {
 var _ Store[State] = (*store[State])(nil)
 
 type store[S State] struct {
-	state       State
-	reducers    []Reducer
+	state       S
+	reducers    []Reducer[S]
 	subscribers []chan S
 
 	sync.RWMutex
 }
 
 // New creates a new store.
-func New[S State](initialState S, reducers ...Reducer) Store[S] {
+func New[S State](initialState S, reducers ...Reducer[S]) Store[S] {
 	s := new(store[S])
 	s.state = initialState
 	s.reducers = slices.Append(reducers, s.reducers...)
@@ -107,7 +107,7 @@ func (s *store[S]) Dispatch(actions ...Action) {
 
 			for _, sub := range s.subscribers {
 				go func(sub chan<- S) { // background
-					sub <- s.state.(S)
+					sub <- s.state
 				}(sub)
 			}
 		}
@@ -115,7 +115,7 @@ func (s *store[S]) Dispatch(actions ...Action) {
 }
 
 // State gets the current state of the store.
-func (s *store[S]) State(states ...State) S {
+func (s *store[S]) State(states ...S) S {
 	s.Lock()
 	defer s.Unlock()
 
@@ -123,7 +123,7 @@ func (s *store[S]) State(states ...State) S {
 		s.state = slices.First(states...)
 	}
 
-	return s.state.(S)
+	return s.state
 }
 
 // Subscribe subscribes to the store.
