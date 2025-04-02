@@ -81,6 +81,26 @@ a := optional.Some(100)
 fmt.Println(a.String()) // true
 ```
 
+## Finite State Machine
+
+There is a simple implementation of a finite state machine.
+
+```go
+// StateMachine is a simple implementation of a finite state machine.
+type State struct {
+	Name string `json:"name"`
+}
+
+action := fsmx.NewAction(1, "foo")
+
+state := &State{Name: "foo"}
+store := fsm.NewpStore(State, action)
+
+store.Dispatch(action)
+updates := store.Subscribe()
+
+```
+
 ## Databases
 
 There are also more complex tools like the `Database` interface which enables to easliy implement database wrappers.
