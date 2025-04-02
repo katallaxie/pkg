@@ -7,25 +7,25 @@ import (
 )
 
 // Subscription is the type of the subscription of the FSM.
-type Subscription interface {
+type Subscription[S State] interface {
 	// ID gets the ID of the subscription.
 	ID() int
 	// Listen listens to the subscription.
-	Listen() <-chan State
+	Listen() <-chan S
 	// Cancel cancels the subscription.
 	Cancel()
 }
 
-var _ Subscription = (*subscription)(nil)
+var _ Subscription[State] = (*subscription[State])(nil)
 
-type subscription struct {
+type subscription[S State] struct {
 	id      int
-	store   *store
+	store   *store[S]
 	subOnce sync.Once
 }
 
 // Cancel cancels the subscription.
-func (s *subscription) Cancel() {
+func (s *subscription[S]) Cancel() {
 	s.store.Lock()
 	defer s.store.Unlock()
 
@@ -38,8 +38,8 @@ func (s *subscription) Cancel() {
 }
 
 // Listen listens to the subscription.
-func (s *subscription) Listen() <-chan State {
-	l := make(chan State)
+func (s *subscription[S]) Listen() <-chan S {
+	l := make(chan S)
 
 	s.subOnce.Do(func() {
 		s.store.Lock()
@@ -52,7 +52,7 @@ func (s *subscription) Listen() <-chan State {
 }
 
 // ID gets the ID of the subscription.
-func (s *subscription) ID() int {
+func (s *subscription[S]) ID() int {
 	return s.id
 }
 
@@ -108,29 +108,31 @@ func (a *action) Type(types ...ActionType) ActionType {
 type Reducer func(prev State, action Action) State
 
 // Store is the type of the store of the FSM.
-type Store interface {
+type Store[S State] interface {
 	// Dispatch dispatches an event to the FSM.
 	Dispatch(actions ...Action)
 	// Subscribe subscribes to the store.
-	Subscribe() Subscription
+	Subscribe() Subscription[S]
 	// State gets the current state of the store.
-	State(s ...State) State
+	State(s ...State) S
 	// Drain drains the store.
 	Drain()
 }
 
-type store struct {
+var _ Store[State] = (*store[State])(nil)
+
+type store[S State] struct {
 	id          int
 	state       State
 	reducers    []Reducer
-	subscribers []chan<- State
+	subscribers []chan<- S
 
 	sync.RWMutex
 }
 
 // New creates a new store.
-func New(initialState State, reducers ...Reducer) Store {
-	s := new(store)
+func New[S State](initialState S, reducers ...Reducer) Store[S] {
+	s := new(store[S])
 	s.state = initialState
 	s.reducers = slices.Append(reducers, s.reducers...)
 
@@ -138,7 +140,7 @@ func New(initialState State, reducers ...Reducer) Store {
 }
 
 // Dispatch dispatches an event to the FSM.
-func (s *store) Dispatch(actions ...Action) {
+func (s *store[S]) Dispatch(actions ...Action) {
 	s.Lock()
 	defer s.Unlock()
 
@@ -147,8 +149,8 @@ func (s *store) Dispatch(actions ...Action) {
 			s.state = reducer(s.state, action)
 
 			for _, sub := range s.subscribers {
-				go func(sub chan<- State) { // background
-					sub <- s.state
+				go func(sub chan<- S) { // background
+					sub <- s.state.(S)
 				}(sub)
 			}
 		}
@@ -156,7 +158,7 @@ func (s *store) Dispatch(actions ...Action) {
 }
 
 // State gets the current state of the store.
-func (s *store) State(states ...State) State {
+func (s *store[S]) State(states ...State) S {
 	s.Lock()
 	defer s.Unlock()
 
@@ -164,15 +166,15 @@ func (s *store) State(states ...State) State {
 		s.state = slices.First(states...)
 	}
 
-	return s.state
+	return s.state.(S)
 }
 
 // Subscribe subscribes to the store.
-func (s *store) Subscribe() Subscription {
+func (s *store[S]) Subscribe() Subscription[S] {
 	s.Lock()
 	defer s.Unlock()
 
-	sub := new(subscription)
+	sub := new(subscription[S])
 	s.id++
 	sub.id = s.id
 	sub.store = s
@@ -181,7 +183,7 @@ func (s *store) Subscribe() Subscription {
 }
 
 // Drain drains the store.
-func (s *store) Drain() {
+func (s *store[S]) Drain() {
 	s.Lock()
 	defer s.Unlock()
 

@@ -11,7 +11,9 @@ import (
 func TestNew(t *testing.T) {
 	t.Parallel()
 
-	s := fsmx.New(nil)
+	noopState := struct{}{}
+
+	s := fsmx.New(noopState)
 	require.NotNil(t, s)
 }
 
@@ -85,7 +87,11 @@ func TestDispatch(t *testing.T) {
 }
 
 func TestDrain(t *testing.T) {
-	s := fsmx.New(nil)
+	t.Parallel()
+
+	noopState := struct{}{}
+
+	s := fsmx.New(noopState)
 	require.NotNil(t, s)
 
 	sub := s.Subscribe()
@@ -99,7 +105,9 @@ func TestDrain(t *testing.T) {
 func TestSubscriptionID(t *testing.T) {
 	t.Parallel()
 
-	s := fsmx.New(nil)
+	noopState := struct{}{}
+
+	s := fsmx.New(noopState)
 	require.NotNil(t, s)
 
 	sub := s.Subscribe()
