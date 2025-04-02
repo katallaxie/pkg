@@ -71,9 +71,11 @@ func TestDispatch(t *testing.T) {
 			require.NotNil(t, s)
 
 			sub := s.Subscribe()
+			listener := sub.Listen()
 			s.Dispatch(nil)
 
-			output := <-sub
+			output := <-listener
+			defer sub.Cancel()
 			require.NotNil(t, output)
 			require.Equal(t, tt.expected, output)
 
@@ -87,8 +89,30 @@ func TestDrain(t *testing.T) {
 	require.NotNil(t, s)
 
 	sub := s.Subscribe()
+	listener := sub.Listen()
 	s.Drain()
 
-	_, ok := <-sub
+	_, ok := <-listener
 	require.False(t, ok)
+}
+
+func TestSubscriptionID(t *testing.T) {
+	t.Parallel()
+
+	s := fsmx.New(nil)
+	require.NotNil(t, s)
+
+	sub := s.Subscribe()
+	_ = sub.Listen()
+	defer sub.Cancel()
+
+	assert.NotEmpty(t, sub.ID())
+	assert.NotEmpty(t, 1, sub.ID())
+
+	sub2 := s.Subscribe()
+	_ = sub2.Listen()
+	defer sub2.Cancel()
+
+	assert.NotEmpty(t, sub2.ID())
+	assert.NotEmpty(t, 2, sub2.ID())
 }

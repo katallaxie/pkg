@@ -6,6 +6,56 @@ import (
 	"github.com/katallaxie/pkg/slices"
 )
 
+// Subscription is the type of the subscription of the FSM.
+type Subscription interface {
+	// ID gets the ID of the subscription.
+	ID() int
+	// Listen listens to the subscription.
+	Listen() <-chan State
+	// Cancel cancels the subscription.
+	Cancel()
+}
+
+var _ Subscription = (*subscription)(nil)
+
+type subscription struct {
+	id      int
+	store   *store
+	subOnce sync.Once
+}
+
+// Cancel cancels the subscription.
+func (s *subscription) Cancel() {
+	s.store.Lock()
+	defer s.store.Unlock()
+
+	for i, sub := range s.store.subscribers {
+		if i == s.id {
+			slices.Delete(i, s.store.subscribers...)
+			close(sub)
+		}
+	}
+}
+
+// Listen listens to the subscription.
+func (s *subscription) Listen() <-chan State {
+	l := make(chan State)
+
+	s.subOnce.Do(func() {
+		s.store.Lock()
+		defer s.store.Unlock()
+
+		s.store.subscribers = append(s.store.subscribers, l)
+	})
+
+	return l
+}
+
+// ID gets the ID of the subscription.
+func (s *subscription) ID() int {
+	return s.id
+}
+
 // ActionPayload is the type of the payload of the action.
 type ActionPayload interface{}
 
@@ -62,7 +112,7 @@ type Store interface {
 	// Dispatch dispatches an event to the FSM.
 	Dispatch(actions ...Action)
 	// Subscribe subscribes to the store.
-	Subscribe() <-chan State
+	Subscribe() Subscription
 	// State gets the current state of the store.
 	State(s ...State) State
 	// Drain drains the store.
@@ -70,6 +120,7 @@ type Store interface {
 }
 
 type store struct {
+	id          int
 	state       State
 	reducers    []Reducer
 	subscribers []chan<- State
@@ -117,12 +168,14 @@ func (s *store) State(states ...State) State {
 }
 
 // Subscribe subscribes to the store.
-func (s *store) Subscribe() <-chan State {
+func (s *store) Subscribe() Subscription {
 	s.Lock()
 	defer s.Unlock()
 
-	sub := make(chan State)
-	s.subscribers = slices.Append(s.subscribers, sub)
+	sub := new(subscription)
+	s.id++
+	sub.id = s.id
+	sub.store = s
 
 	return sub
 }
