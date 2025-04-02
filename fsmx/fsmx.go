@@ -63,6 +63,8 @@ type Store interface {
 	Dispatch(actions ...Action)
 	// Subscribe subscribes to the store.
 	Subscribe() <-chan State
+	// State gets the current state of the store.
+	State(s ...State) State
 	// Drain drains the store.
 	Drain()
 }
@@ -100,6 +102,18 @@ func (s *store) Dispatch(actions ...Action) {
 			}
 		}
 	}
+}
+
+// State gets the current state of the store.
+func (s *store) State(states ...State) State {
+	s.Lock()
+	defer s.Unlock()
+
+	if slices.Len(states) > 0 {
+		s.state = slices.First(states...)
+	}
+
+	return s.state
 }
 
 // Subscribe subscribes to the store.
