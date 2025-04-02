@@ -73,15 +73,14 @@ func TestDispatch(t *testing.T) {
 			require.NotNil(t, s)
 
 			sub := s.Subscribe()
-			listener := sub.Listen()
 			s.Dispatch(nil)
 
-			output := <-listener
-			defer sub.Cancel()
+			output := <-sub
+			defer s.CancelSubscription(sub)
 			require.NotNil(t, output)
 			require.Equal(t, tt.expected, output)
 
-			s.Drain()
+			s.Cancel()
 		})
 	}
 }
@@ -95,32 +94,8 @@ func TestDrain(t *testing.T) {
 	require.NotNil(t, s)
 
 	sub := s.Subscribe()
-	listener := sub.Listen()
-	s.Drain()
+	s.Cancel()
 
-	_, ok := <-listener
+	_, ok := <-sub
 	require.False(t, ok)
-}
-
-func TestSubscriptionID(t *testing.T) {
-	t.Parallel()
-
-	noopState := struct{}{}
-
-	s := fsmx.New(noopState)
-	require.NotNil(t, s)
-
-	sub := s.Subscribe()
-	_ = sub.Listen()
-	defer sub.Cancel()
-
-	assert.NotEmpty(t, sub.ID())
-	assert.NotEmpty(t, 1, sub.ID())
-
-	sub2 := s.Subscribe()
-	_ = sub2.Listen()
-	defer sub2.Cancel()
-
-	assert.NotEmpty(t, sub2.ID())
-	assert.NotEmpty(t, 2, sub2.ID())
 }

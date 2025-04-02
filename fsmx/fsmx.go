@@ -8,52 +8,10 @@ import (
 
 // Subscription is the type of the subscription of the FSM.
 type Subscription[S State] interface {
-	// ID gets the ID of the subscription.
-	ID() int
-	// Listen listens to the subscription.
-	Listen() <-chan S
+	// Subscribe subscribes to the FSM.
+	Subscribe() <-chan S
 	// Cancel cancels the subscription.
-	Cancel()
-}
-
-var _ Subscription[State] = (*subscription[State])(nil)
-
-type subscription[S State] struct {
-	id      int
-	store   *store[S]
-	subOnce sync.Once
-}
-
-// Cancel cancels the subscription.
-func (s *subscription[S]) Cancel() {
-	s.store.Lock()
-	defer s.store.Unlock()
-
-	for i, sub := range s.store.subscribers {
-		if i == s.id {
-			slices.Delete(i, s.store.subscribers...)
-			close(sub)
-		}
-	}
-}
-
-// Listen listens to the subscription.
-func (s *subscription[S]) Listen() <-chan S {
-	l := make(chan S)
-
-	s.subOnce.Do(func() {
-		s.store.Lock()
-		defer s.store.Unlock()
-
-		s.store.subscribers = append(s.store.subscribers, l)
-	})
-
-	return l
-}
-
-// ID gets the ID of the subscription.
-func (s *subscription[S]) ID() int {
-	return s.id
+	CancelSubscription(<-chan S)
 }
 
 // ActionPayload is the type of the payload of the action.
@@ -111,21 +69,20 @@ type Reducer func(prev State, action Action) State
 type Store[S State] interface {
 	// Dispatch dispatches an event to the FSM.
 	Dispatch(actions ...Action)
-	// Subscribe subscribes to the store.
-	Subscribe() Subscription[S]
 	// State gets the current state of the store.
 	State(s ...State) S
 	// Drain drains the store.
-	Drain()
+	Cancel()
+
+	Subscription[S]
 }
 
 var _ Store[State] = (*store[State])(nil)
 
 type store[S State] struct {
-	id          int
 	state       State
 	reducers    []Reducer
-	subscribers []chan<- S
+	subscribers []chan S
 
 	sync.RWMutex
 }
@@ -170,20 +127,33 @@ func (s *store[S]) State(states ...State) S {
 }
 
 // Subscribe subscribes to the store.
-func (s *store[S]) Subscribe() Subscription[S] {
+func (s *store[S]) Subscribe() <-chan S {
 	s.Lock()
 	defer s.Unlock()
 
-	sub := new(subscription[S])
-	s.id++
-	sub.id = s.id
-	sub.store = s
+	newListener := make(chan S)
+	s.subscribers = append(s.subscribers, newListener)
 
-	return sub
+	return newListener
+}
+
+// CancelSubscription cancels the subscription.
+func (s *store[S]) CancelSubscription(sub <-chan S) {
+	s.Lock()
+	defer s.Unlock()
+
+	for i, l := range s.subscribers {
+		if l == sub {
+			slices.Delete(i, s.subscribers...)
+			if _, ok := <-l; ok {
+				close(l)
+			}
+		}
+	}
 }
 
 // Drain drains the store.
-func (s *store[S]) Drain() {
+func (s *store[S]) Cancel() {
 	s.Lock()
 	defer s.Unlock()
 
