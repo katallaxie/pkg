@@ -96,3 +96,17 @@ func Channel[T any](source []T, in chan any) {
 		in <- e
 	}
 }
+
+// Wrap wraps a channel into a typed channel.
+func Wrap[T any](ch chan any) chan T {
+	out := make(chan T)
+
+	go func() {
+		defer close(out)
+		for e := range ch {
+			out <- e.(T)
+		}
+	}()
+
+	return out
+}
