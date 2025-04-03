@@ -21,7 +21,7 @@ func TestHook(t *testing.T) {
 		state    noopState
 		expected fsmx.State
 		reducer  fsmx.Reducer[noopState]
-		hook     fsmx.EffectFunc[noopState]
+		hook     fsmx.EffectFunc
 	}{
 		{
 			name: "non nil state",

@@ -3,7 +3,7 @@ package fsmx
 import "context"
 
 // Effect is a function that takes a context and returns an action
-func Effect[S State](store Store[S], hook EffectFunc[S]) error {
+func Effect[S State](store Store[S], hook EffectFunc) error {
 	action, err := hook(context.Background())
 	if err != nil {
 		return err
@@ -15,4 +15,4 @@ func Effect[S State](store Store[S], hook EffectFunc[S]) error {
 }
 
 // EffectFunc is a function that takes a context and returns an action
-type EffectFunc[S State] func(ctx context.Context) (Action, error)
+type EffectFunc func(ctx context.Context) (Action, error)
