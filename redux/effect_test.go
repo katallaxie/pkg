@@ -1,10 +1,10 @@
-package fsmx_test
+package redux_test
 
 import (
 	"context"
 	"testing"
 
-	"github.com/katallaxie/pkg/fsmx"
+	"github.com/katallaxie/pkg/redux"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -19,9 +19,9 @@ func TestHook(t *testing.T) {
 	tests := []struct {
 		name     string
 		state    noopState
-		expected fsmx.State
-		reducer  fsmx.Reducer[noopState]
-		hook     fsmx.EffectFunc
+		expected redux.State
+		reducer  redux.Reducer[noopState]
+		hook     redux.EffectFunc
 	}{
 		{
 			name: "non nil state",
@@ -31,21 +31,21 @@ func TestHook(t *testing.T) {
 			expected: noopState{
 				Text: "bar",
 			},
-			reducer: func(prev noopState, action fsmx.Action) noopState {
+			reducer: func(prev noopState, action redux.Action) noopState {
 				return noopState{
 					Text: action.Payload().(string),
 				}
 			},
-			hook: func(ctx context.Context) (fsmx.Action, error) {
-				return fsmx.NewAction(1, "bar"), nil
+			hook: func(ctx context.Context) (redux.Action, error) {
+				return redux.NewAction(1, "bar"), nil
 			},
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			store := fsmx.New(tt.state, tt.reducer)
-			err := fsmx.Effect(store, tt.hook)
+			store := redux.New(tt.state, tt.reducer)
+			err := redux.Effect(store, tt.hook)
 			require.NoError(t, err)
 
 			assert.Equal(t, tt.expected, store.State())

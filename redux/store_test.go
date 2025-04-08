@@ -1,35 +1,57 @@
-package fsmx_test
+package redux_test
 
 import (
+	"fmt"
 	"testing"
 
-	"github.com/katallaxie/pkg/fsmx"
+	"github.com/katallaxie/pkg/redux"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
+
+func ExampleNew() {
+	type noopState struct {
+		Name string
+	}
+
+	r := func(prev noopState, action redux.Action) noopState {
+		return noopState{Name: "bar"}
+	}
+	a := redux.NewAction(1, "foo")
+
+	s := redux.New(noopState{Name: "foo"}, r)
+	defer s.Dispose()
+
+	sub := s.Subscribe()
+	s.Dispatch(a)
+
+	out := <-sub
+	fmt.Println(out)
+	// Output: {bar}
+}
 
 func TestNew(t *testing.T) {
 	t.Parallel()
 
 	noopState := struct{}{}
 
-	s := fsmx.New(noopState)
+	s := redux.New(noopState)
 	require.NotNil(t, s)
 }
 
 func TestNewAction(t *testing.T) {
 	t.Parallel()
 
-	a := fsmx.NewAction(1, "foo")
+	a := redux.NewAction(1, "foo")
 	require.NotNil(t, a)
-	assert.Equal(t, fsmx.ActionType(1), a.Type())
+	assert.Equal(t, redux.ActionType(1), a.Type())
 	assert.Equal(t, "foo", a.Payload())
 
 	a.Payload("bar")
 	assert.Equal(t, "bar", a.Payload())
 
 	a.Type(2)
-	assert.Equal(t, fsmx.ActionType(2), a.Type())
+	assert.Equal(t, redux.ActionType(2), a.Type())
 }
 
 func TestDispatch(t *testing.T) {
@@ -42,8 +64,8 @@ func TestDispatch(t *testing.T) {
 	tests := []struct {
 		name     string
 		state    noopState
-		expected fsmx.State
-		reducers []fsmx.Reducer[noopState]
+		expected redux.State
+		reducers []redux.Reducer[noopState]
 	}{
 		{
 			name: "non nil state",
@@ -53,8 +75,8 @@ func TestDispatch(t *testing.T) {
 			expected: noopState{
 				Text: "bar",
 			},
-			reducers: []fsmx.Reducer[noopState]{
-				func(prev noopState, action fsmx.Action) noopState {
+			reducers: []redux.Reducer[noopState]{
+				func(prev noopState, action redux.Action) noopState {
 					return struct {
 						Text string
 					}{
@@ -69,7 +91,7 @@ func TestDispatch(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			s := fsmx.New(tt.state, tt.reducers...)
+			s := redux.New(tt.state, tt.reducers...)
 			require.NotNil(t, s)
 
 			sub := s.Subscribe()
@@ -80,21 +102,21 @@ func TestDispatch(t *testing.T) {
 			require.NotNil(t, output)
 			require.Equal(t, tt.expected, output)
 
-			s.Cancel()
+			s.Dispose()
 		})
 	}
 }
 
-func TestDrain(t *testing.T) {
+func TestDispose(t *testing.T) {
 	t.Parallel()
 
 	noopState := struct{}{}
 
-	s := fsmx.New(noopState)
+	s := redux.New(noopState)
 	require.NotNil(t, s)
 
 	sub := s.Subscribe()
-	s.Cancel()
+	s.Dispose()
 
 	_, ok := <-sub
 	require.False(t, ok)

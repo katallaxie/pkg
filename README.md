@@ -86,15 +86,15 @@ fmt.Println(a.String()) // true
 There is a simple implementation of a finite state machine.
 
 ```go
-// StateMachine is a simple implementation of a finite state machine.
-type State struct {
+// NoopState is a simple state of a store.
+type NoopState struct {
 	Name string `json:"name"`
 }
 
-action := fsmx.NewAction(1, "foo")
+action := redux.NewAction(1, "foo")
 
-state := &State{Name: "foo"}
-store := fsm.NewpStore(State, action)
+state := NoopState{Name: "foo"}
+store := redux.NewStore(State, action)
 
 store.Dispatch(action)
 updates := store.Subscribe()

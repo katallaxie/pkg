@@ -1,6 +1,7 @@
-package fsmx
+package redux
 
 import (
+	"iter"
 	"sync"
 
 	"github.com/katallaxie/pkg/slices"
@@ -22,6 +23,20 @@ type ActionType int
 
 // State is the type of the state of the FSM.
 type State interface{}
+
+// Reduce is the type of the reducer of the FSM.
+func Reduce[S State](curr S, reducers []Reducer[S], actions ...Action) iter.Seq[State] {
+	return func(yield func(State) bool) {
+		for _, action := range actions {
+			for _, reducer := range reducers {
+				curr = reducer(curr, action)
+				if !yield(curr) {
+					return
+				}
+			}
+		}
+	}
+}
 
 // Actionable is the interface that wraps the basic Action methods.
 type Action interface {
@@ -71,8 +86,8 @@ type Store[S State] interface {
 	Dispatch(actions ...Action)
 	// State gets the current state of the store.
 	State(s ...S) S
-	// Drain drains the store.
-	Cancel()
+	// Dispose disposes the store.
+	Dispose()
 
 	Subscription[S]
 }
@@ -152,8 +167,8 @@ func (s *store[S]) CancelSubscription(sub <-chan S) {
 	}
 }
 
-// Drain drains the store.
-func (s *store[S]) Cancel() {
+// Dispose disposes the store.
+func (s *store[S]) Dispose() {
 	s.Lock()
 	defer s.Unlock()
 

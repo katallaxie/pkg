@@ -1,4 +1,4 @@
-package fsmx
+package redux
 
 import "context"
 
