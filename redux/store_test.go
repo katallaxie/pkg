@@ -92,6 +92,7 @@ func TestDispatch(t *testing.T) {
 			t.Parallel()
 
 			s := redux.New(tt.state, tt.reducers...)
+			defer s.Dispose()
 			require.NotNil(t, s)
 
 			sub := s.Subscribe()
@@ -101,8 +102,6 @@ func TestDispatch(t *testing.T) {
 			defer s.CancelSubscription(sub)
 			require.NotNil(t, output)
 			require.Equal(t, tt.expected, output)
-
-			s.Dispose()
 		})
 	}
 }

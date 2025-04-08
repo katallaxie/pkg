@@ -159,10 +159,8 @@ func (s *store[S]) CancelSubscription(sub <-chan S) {
 
 	for i, l := range s.subscribers {
 		if l == sub {
-			slices.Delete(i, s.subscribers...)
-			if _, ok := <-l; ok {
-				close(l)
-			}
+			s.subscribers = slices.Delete(i, s.subscribers...)
+			close(l)
 		}
 	}
 }
