@@ -26,8 +26,8 @@ func ExampleNew() {
 	s.Dispatch(a)
 
 	out := <-sub
-	fmt.Println(out)
-	// Output: {bar}
+	fmt.Println(out.Curr(), out.Prev())
+	// Output: {bar} {foo}
 }
 
 func TestNew(t *testing.T) {
@@ -89,8 +89,6 @@ func TestDispatch(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-
 			s := redux.New(tt.state, tt.reducers...)
 			defer s.Dispose()
 			require.NotNil(t, s)
@@ -101,7 +99,7 @@ func TestDispatch(t *testing.T) {
 			output := <-sub
 			defer s.CancelSubscription(sub)
 			require.NotNil(t, output)
-			require.Equal(t, tt.expected, output)
+			require.Equal(t, tt.expected, output.Curr())
 		})
 	}
 }
@@ -119,4 +117,58 @@ func TestDispose(t *testing.T) {
 
 	_, ok := <-sub
 	require.False(t, ok)
+}
+
+func TestNewStateChange(t *testing.T) {
+	t.Parallel()
+
+	type noopState struct {
+		Text string
+	}
+
+	tests := []struct {
+		name     string
+		state    noopState
+		expected redux.State
+		reducers []redux.Reducer[noopState]
+	}{
+		{
+			name: "non nil state",
+			state: noopState{
+				Text: "foo",
+			},
+			expected: noopState{
+				Text: "bar",
+			},
+			reducers: []redux.Reducer[noopState]{
+				func(prev noopState, action redux.Action) noopState {
+					return struct {
+						Text string
+					}{
+						Text: "bar",
+					}
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			s := redux.New(tt.state, tt.reducers...)
+			defer s.Dispose()
+			require.NotNil(t, s)
+
+			sub := s.Subscribe()
+			s.Dispatch(nil)
+
+			output := <-sub
+			defer s.CancelSubscription(sub)
+
+			require.NotNil(t, output)
+			require.Equal(t, tt.state, output.Prev())
+			require.Equal(t, tt.expected, output.Curr())
+		})
+	}
 }

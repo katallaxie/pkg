@@ -51,7 +51,7 @@ func TestBackgroundOnce(t *testing.T) {
 			changeString()
 
 			state := <-sub
-			assert.Equal(t, tt.expected, state)
+			assert.Equal(t, tt.expected, state.Curr())
 		})
 	}
 }

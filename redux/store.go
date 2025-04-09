@@ -8,24 +8,24 @@ import (
 	"github.com/katallaxie/pkg/slices"
 )
 
-// Subscription is the type of the subscription of the FSM.
+// Subscription is the type of the subscription of the store.
 type Subscription[S State] interface {
-	// Subscribe subscribes to the FSM.
-	Subscribe() <-chan S
+	// Subscribe subscribes to the store.
+	Subscribe() <-chan StateChange[S]
 	// Cancel cancels the subscription.
-	CancelSubscription(<-chan S)
+	CancelSubscription(<-chan StateChange[S])
 }
 
 // ActionPayload is the type of the payload of the action.
 type ActionPayload interface{}
 
-// Action is the type of the action of the FSM.
+// Action is the type of the action of the store.
 type ActionType int
 
-// State is the type of the state of the FSM.
+// State is the type of the state of the store.
 type State interface{}
 
-// Reduce is the type of the reducer of the FSM.
+// Reduce is the type of the reducer of the store.
 func Reduce[S State](curr S, reducers []Reducer[S], actions ...Action) iter.Seq[State] {
 	return func(yield func(State) bool) {
 		for _, action := range actions {
@@ -78,12 +78,12 @@ func (a *action) Type(types ...ActionType) ActionType {
 	return a.actionType
 }
 
-// Reducer is the type of the reducer of the FSM.
+// Reducer is the type of the reducer of the store.
 type Reducer[S State] func(prev S, action Action) S
 
-// Store is the type of the store of the FSM.
+// Store is the type of the store.
 type Store[S State] interface {
-	// Dispatch dispatches an event to the FSM.
+	// Dispatch dispatches an event to the store.
 	Dispatch(actions ...Action)
 	// State gets the current state of the store.
 	State(s ...S) S
@@ -93,12 +93,45 @@ type Store[S State] interface {
 	Subscription[S]
 }
 
+// StateChange is the type of the state change of the store.
+type StateChange[S State] interface {
+	// Prev gets the previous state of the store.
+	Prev() S
+	// Curr gets the current state of the store.
+	Curr() S
+}
+
+var _ StateChange[any] = (*stateChange[any])(nil)
+
+type stateChange[S State] struct {
+	prev S
+	curr S
+}
+
+// NewStateChange creates a new state change.
+func NewStateChange[S State](prev, curr S) StateChange[S] {
+	return &stateChange[S]{
+		prev: prev,
+		curr: curr,
+	}
+}
+
+// Curr gets the current state of the store.
+func (s *stateChange[S]) Curr() S {
+	return s.curr
+}
+
+// Prev gets the previous state of the store.
+func (s *stateChange[S]) Prev() S {
+	return s.prev
+}
+
 var _ Store[State] = (*store[State])(nil)
 
 type store[S State] struct {
 	state       S
 	reducers    []Reducer[S]
-	subscribers []chan S
+	subscribers []chan StateChange[S]
 
 	sync.RWMutex
 }
@@ -112,18 +145,19 @@ func New[S State](initialState S, reducers ...Reducer[S]) Store[S] {
 	return s
 }
 
-// Dispatch dispatches an event to the FSM.
+// Dispatch dispatches an event to the store.
 func (s *store[S]) Dispatch(actions ...Action) {
 	s.Lock()
 	defer s.Unlock()
 
 	for _, action := range actions {
 		for _, reducer := range s.reducers {
+			prev := s.state
 			s.state = reducer(s.state, action)
 
 			for _, sub := range s.subscribers {
-				go func(sub chan<- S) { // background
-					sub <- s.state
+				go func(sub chan<- StateChange[S]) { // background
+					sub <- NewStateChange(prev, s.state)
 				}(sub)
 			}
 		}
@@ -143,18 +177,18 @@ func (s *store[S]) State(states ...S) S {
 }
 
 // Subscribe subscribes to the store.
-func (s *store[S]) Subscribe() <-chan S {
+func (s *store[S]) Subscribe() <-chan StateChange[S] {
 	s.Lock()
 	defer s.Unlock()
 
-	newListener := make(chan S)
+	newListener := make(chan StateChange[S])
 	s.subscribers = append(s.subscribers, newListener)
 
 	return newListener
 }
 
 // CancelSubscription cancels the subscription.
-func (s *store[S]) CancelSubscription(sub <-chan S) {
+func (s *store[S]) CancelSubscription(sub <-chan StateChange[S]) {
 	s.Lock()
 	defer s.Unlock()
 
