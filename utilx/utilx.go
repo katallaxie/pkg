@@ -12,6 +12,11 @@ func NotEmpty[T comparable](value T) bool {
 	return !Empty(value)
 }
 
+// Equal returns true of the given values are equal.
+func Equal[T comparable](a, b T) bool {
+	return IfElse(Empty(a) && Empty(b), true, a == b)
+}
+
 // And works similar to "&&" in other languages.
 func And[T comparable](a, b T) T {
 	var c T

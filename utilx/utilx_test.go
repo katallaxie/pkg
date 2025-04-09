@@ -85,3 +85,20 @@ func TestEmpty(t *testing.T) {
 		require.Equal(t, test.expected, got)
 	}
 }
+
+func TestEqual(t *testing.T) {
+	tests := []struct {
+		a        int
+		b        int
+		expected bool
+	}{
+		{0, 0, true},
+		{1, 1, true},
+		{1, 2, false},
+	}
+
+	for _, test := range tests {
+		got := utilx.Equal(test.a, test.b)
+		require.Equal(t, test.expected, got)
+	}
+}
