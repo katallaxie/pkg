@@ -81,9 +81,9 @@ a := optional.Some(100)
 fmt.Println(a.String()) // true
 ```
 
-## Finite State Machine
+## Redux-inspired state management
 
-There is a simple implementation of a finite state machine.
+This is a simple state management inspired by [Redux](https://redux.js.org/).
 
 ```go
 // NoopState is a simple state of a store.
