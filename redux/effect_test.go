@@ -6,10 +6,9 @@ import (
 
 	"github.com/katallaxie/pkg/redux"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
-func TestHook(t *testing.T) {
+func TestBackgroundOnce(t *testing.T) {
 	t.Parallel()
 
 	type noopState struct {
@@ -21,7 +20,7 @@ func TestHook(t *testing.T) {
 		state    noopState
 		expected redux.State
 		reducer  redux.Reducer[noopState]
-		hook     redux.EffectFunc
+		effect   redux.EffectFunc
 	}{
 		{
 			name: "non nil state",
@@ -36,8 +35,8 @@ func TestHook(t *testing.T) {
 					Text: action.Payload().(string),
 				}
 			},
-			hook: func(ctx context.Context) (redux.Action, error) {
-				return redux.NewAction(1, "bar"), nil
+			effect: func(ctx context.Context) redux.Action {
+				return redux.NewAction(1, "bar")
 			},
 		},
 	}
@@ -45,10 +44,14 @@ func TestHook(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			store := redux.New(tt.state, tt.reducer)
-			err := redux.Effect(store, tt.hook)
-			require.NoError(t, err)
+			sub := store.Subscribe()
+			defer store.CancelSubscription(sub)
 
-			assert.Equal(t, tt.expected, store.State())
+			changeString := redux.BackgroundOnce(context.Background(), store, tt.effect)
+			changeString()
+
+			state := <-sub
+			assert.Equal(t, tt.expected, state)
 		})
 	}
 }

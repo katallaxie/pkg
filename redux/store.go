@@ -1,6 +1,7 @@
 package redux
 
 import (
+	"fmt"
 	"iter"
 	"sync"
 
@@ -156,6 +157,8 @@ func (s *store[S]) Subscribe() <-chan S {
 func (s *store[S]) CancelSubscription(sub <-chan S) {
 	s.Lock()
 	defer s.Unlock()
+
+	fmt.Println("cancel subscription")
 
 	for i, l := range s.subscribers {
 		if l == sub {
