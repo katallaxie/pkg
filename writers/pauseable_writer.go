@@ -1,4 +1,4 @@
-package prockeeper
+package writers
 
 import (
 	"io"
