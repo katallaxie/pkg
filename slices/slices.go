@@ -158,8 +158,18 @@ func Append[T any](slice []T, elements ...T) []T {
 }
 
 // Len returns the length of a slice.
-func Len[T any](slice []T) int {
-	return len(slice)
+func Len[T any](i int, elements ...T) bool {
+	return len(elements) == i
+}
+
+// GreaterThen checks if the first slice is greater than the second slice.
+func GreaterThen[T any](i int, elements ...T) bool {
+	return len(elements) > i
+}
+
+// LessThen checks if the first slice is less than the second slice.
+func LessThen[T any](i int, elements ...T) bool {
+	return len(elements) < i
 }
 
 // Reverse reverses the order of elements in a slice.

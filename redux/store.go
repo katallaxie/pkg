@@ -62,7 +62,7 @@ type action struct {
 
 // Payload gets the payload of the action
 func (a *action) Payload(payloads ...ActionPayload) ActionPayload {
-	if slices.Len(payloads) > 0 {
+	if slices.GreaterThen(0, payloads...) {
 		a.payload = slices.First(payloads...)
 	}
 
@@ -71,7 +71,7 @@ func (a *action) Payload(payloads ...ActionPayload) ActionPayload {
 
 // Type gets the type of the action
 func (a *action) Type(types ...ActionType) ActionType {
-	if slices.Len(types) > 0 {
+	if slices.GreaterThen(0, types...) {
 		a.actionType = slices.First(types...)
 	}
 
@@ -169,7 +169,7 @@ func (s *store[S]) State(states ...S) S {
 	s.Lock()
 	defer s.Unlock()
 
-	if slices.Len(states) > 0 {
+	if slices.GreaterThen(0, states...) {
 		s.state = slices.First(states...)
 	}
 
