@@ -482,3 +482,67 @@ func TestForEach(t *testing.T) {
 		})
 	}
 }
+
+func TestFind(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name     string
+		input    []int
+		expected int
+		found    bool
+	}{
+		{
+			name:     "find element in slice",
+			input:    []int{1, 2, 3},
+			found:    true,
+			expected: 2,
+		},
+		{
+			name:     "find element not in slice",
+			input:    []int{1, 3},
+			found:    false,
+			expected: 0,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			actual, found := slices.Find(func(v int) bool { return v == 2 }, tt.input...)
+			assert.Equal(t, tt.expected, actual)
+			assert.Equal(t, tt.found, found)
+		})
+	}
+}
+
+func TestFindIndex(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name     string
+		input    []int
+		expected int
+		found    bool
+	}{
+		{
+			name:     "find index of element in slice",
+			input:    []int{1, 2, 3},
+			expected: 1,
+			found:    true,
+		},
+		{
+			name:     "find index of element not in slice",
+			input:    []int{1, 3},
+			expected: 0,
+			found:    false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			actual, found := slices.FindIndex(func(v int) bool { return v == 2 }, tt.input...)
+			assert.Equal(t, tt.expected, actual)
+			assert.Equal(t, tt.found, found)
+		})
+	}
+}

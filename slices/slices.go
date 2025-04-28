@@ -188,3 +188,26 @@ func ForEach[T any](fn func(v T, i int), slice ...T) {
 		fn(v, i)
 	}
 }
+
+// Find returns the first element in a slice that satisfies a predicate.
+func Find[T any](fn func(v T) bool, slice ...T) (T, bool) {
+	for _, v := range slice {
+		if fn(v) {
+			return v, true
+		}
+	}
+
+	var zero T
+	return zero, false
+}
+
+// FindIndex returns the index of the first element in a slice that satisfies a predicate.
+func FindIndex[T any](fn func(v T) bool, slice ...T) (int, bool) {
+	for i, v := range slice {
+		if fn(v) {
+			return i, true
+		}
+	}
+
+	return 0, false
+}
