@@ -1,7 +1,8 @@
 module github.com/katallaxie/pkg
 
-go 1.24
-toolchain go1.24.1
+go 1.24.0
+
+toolchain go1.24.2
 
 tool (
 	github.com/golangci/golangci-lint/cmd/golangci-lint
