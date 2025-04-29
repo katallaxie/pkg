@@ -1,11 +1,11 @@
 package redux_test
 
 import (
+	"context"
 	"fmt"
 	"testing"
 
 	"github.com/katallaxie/pkg/redux"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -14,12 +14,18 @@ func ExampleNew() {
 		Name string
 	}
 
-	r := func(prev noopState, action redux.Action) noopState {
+	r := func(prev noopState, action redux.Msg) noopState {
 		return noopState{Name: "bar"}
 	}
-	a := redux.NewAction(1, "foo")
 
-	s := redux.New(noopState{Name: "foo"}, r)
+	a := func() redux.Msg {
+		return "foo"
+	}
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	s := redux.New(ctx, noopState{Name: "foo"}, r)
 	defer s.Dispose()
 
 	sub := s.Subscribe()
@@ -30,28 +36,21 @@ func ExampleNew() {
 	// Output: {bar} {foo}
 }
 
+type fooMsg string
+
+func fooAction() redux.Action {
+	return func() redux.Msg {
+		return fooMsg("foo")
+	}
+}
+
 func TestNew(t *testing.T) {
 	t.Parallel()
 
 	noopState := struct{}{}
 
-	s := redux.New(noopState)
+	s := redux.New(t.Context(), noopState)
 	require.NotNil(t, s)
-}
-
-func TestNewAction(t *testing.T) {
-	t.Parallel()
-
-	a := redux.NewAction(1, "foo")
-	require.NotNil(t, a)
-	assert.Equal(t, redux.ActionType(1), a.Type())
-	assert.Equal(t, "foo", a.Payload())
-
-	a.Payload("bar")
-	assert.Equal(t, "bar", a.Payload())
-
-	a.Type(2)
-	assert.Equal(t, redux.ActionType(2), a.Type())
 }
 
 func TestDispatch(t *testing.T) {
@@ -76,7 +75,7 @@ func TestDispatch(t *testing.T) {
 				Text: "bar",
 			},
 			reducers: []redux.Reducer[noopState]{
-				func(prev noopState, action redux.Action) noopState {
+				func(prev noopState, action redux.Msg) noopState {
 					return struct {
 						Text string
 					}{
@@ -89,12 +88,12 @@ func TestDispatch(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := redux.New(tt.state, tt.reducers...)
+			s := redux.New(t.Context(), tt.state, tt.reducers...)
 			defer s.Dispose()
 			require.NotNil(t, s)
 
 			sub := s.Subscribe()
-			s.Dispatch(nil)
+			s.Dispatch(fooAction())
 
 			output := <-sub
 			defer s.CancelSubscription(sub)
@@ -104,12 +103,61 @@ func TestDispatch(t *testing.T) {
 	}
 }
 
+func BenchmarkDispatch(b *testing.B) {
+	type noopState struct {
+		Text string
+	}
+
+	tests := []struct {
+		name     string
+		state    noopState
+		expected redux.State
+		reducers []redux.Reducer[noopState]
+	}{
+		{
+			name: "non nil state",
+			state: noopState{
+				Text: "foo",
+			},
+			expected: noopState{
+				Text: "bar",
+			},
+			reducers: []redux.Reducer[noopState]{
+				func(prev noopState, action redux.Msg) noopState {
+					return struct {
+						Text string
+					}{
+						Text: "bar",
+					}
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		b.Run(tt.name, func(b *testing.B) {
+			s := redux.New(b.Context(), tt.state, tt.reducers...)
+			defer s.Dispose()
+			require.NotNil(b, s)
+
+			sub := s.Subscribe()
+			for i := 0; i < b.N; i++ {
+				s.Dispatch(fooAction())
+				output := <-sub
+				defer s.CancelSubscription(sub)
+				require.NotNil(b, output)
+				require.Equal(b, tt.expected, output.Curr())
+			}
+		})
+	}
+}
+
 func TestDispose(t *testing.T) {
 	t.Parallel()
 
 	noopState := struct{}{}
 
-	s := redux.New(noopState)
+	s := redux.New(t.Context(), noopState)
 	require.NotNil(t, s)
 
 	sub := s.Subscribe()
@@ -141,7 +189,7 @@ func TestNewStateChange(t *testing.T) {
 				Text: "bar",
 			},
 			reducers: []redux.Reducer[noopState]{
-				func(prev noopState, action redux.Action) noopState {
+				func(prev noopState, action redux.Msg) noopState {
 					return struct {
 						Text string
 					}{
@@ -156,12 +204,12 @@ func TestNewStateChange(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			s := redux.New(tt.state, tt.reducers...)
+			s := redux.New(t.Context(), tt.state, tt.reducers...)
 			defer s.Dispose()
 			require.NotNil(t, s)
 
 			sub := s.Subscribe()
-			s.Dispatch(nil)
+			s.Dispatch(fooAction())
 
 			output := <-sub
 			defer s.CancelSubscription(sub)
