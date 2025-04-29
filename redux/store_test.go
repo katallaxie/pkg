@@ -14,11 +14,11 @@ func ExampleNew() {
 		Name string
 	}
 
-	r := func(prev noopState, action redux.Msg) noopState {
+	r := func(prev noopState, action redux.Update) noopState {
 		return noopState{Name: "bar"}
 	}
 
-	a := func() redux.Msg {
+	a := func() redux.Update {
 		return "foo"
 	}
 
@@ -39,7 +39,7 @@ func ExampleNew() {
 type fooMsg string
 
 func fooAction() redux.Action {
-	return func() redux.Msg {
+	return func() redux.Update {
 		return fooMsg("foo")
 	}
 }
@@ -75,7 +75,7 @@ func TestDispatch(t *testing.T) {
 				Text: "bar",
 			},
 			reducers: []redux.Reducer[noopState]{
-				func(prev noopState, action redux.Msg) noopState {
+				func(prev noopState, action redux.Update) noopState {
 					return struct {
 						Text string
 					}{
@@ -123,7 +123,7 @@ func BenchmarkDispatch(b *testing.B) {
 				Text: "bar",
 			},
 			reducers: []redux.Reducer[noopState]{
-				func(prev noopState, action redux.Msg) noopState {
+				func(prev noopState, action redux.Update) noopState {
 					return struct {
 						Text string
 					}{
@@ -189,7 +189,7 @@ func TestNewStateChange(t *testing.T) {
 				Text: "bar",
 			},
 			reducers: []redux.Reducer[noopState]{
-				func(prev noopState, action redux.Msg) noopState {
+				func(prev noopState, action redux.Update) noopState {
 					return struct {
 						Text string
 					}{

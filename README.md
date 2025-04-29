@@ -86,15 +86,25 @@ fmt.Println(a.String()) // true
 This is a simple state management inspired by [Redux](https://redux.js.org/).
 
 ```go
+// FootUpdate is a simple update.
+type FooUpdate struct {}
+
+var FooAction = red
+
 // NoopState is a simple state of a store.
 type NoopState struct {
 	Name string `json:"name"`
 }
 
-action := redux.NewAction(1, "foo")
+store := redux.New(context.Background(), NoopState{Name: "foo"}, r)
+defer s.Dispose()
 
 state := NoopState{Name: "foo"}
-store := redux.NewStore(State, action)
+store := redux.NewStore(context.Background(), State)
+
+action := func() FooUpdate {
+	return "foo"
+}
 
 store.Dispatch(action)
 updates := store.Subscribe()

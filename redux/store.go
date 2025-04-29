@@ -6,13 +6,14 @@ import (
 	"sync"
 
 	"github.com/katallaxie/pkg/slices"
+	"github.com/katallaxie/pkg/utilx"
 )
 
-// Msg is the type of the message of the store.
-type Msg interface{}
+// Update is the type of the update of the store.
+type Update interface{}
 
 // Action is the type of the action of the store.
-type Action func() Msg
+type Action func() Update
 
 // Subscription is the type of the subscription of the store.
 type Subscription[S State] interface {
@@ -22,14 +23,16 @@ type Subscription[S State] interface {
 	CancelSubscription(<-chan StateChange[S])
 }
 
-// ActionPayload is the type of the payload of the action.
-type ActionPayload interface{}
-
-// Action is the type of the action of the store.
-type ActionType int
-
 // State is the type of the state of the store.
 type State interface{}
+
+// QuitAction is the type of the quit action of the store.
+func Quit() Update {
+	return QuitUpdate{}
+}
+
+// QuitUpdate is the type of the quit update of the store.
+type QuitUpdate struct{}
 
 // Reduce is the type of the reducer of the store.
 func Reduce[S State](curr S, reducers []Reducer[S], actions ...Action) iter.Seq[State] {
@@ -46,7 +49,7 @@ func Reduce[S State](curr S, reducers []Reducer[S], actions ...Action) iter.Seq[
 }
 
 // Reducer is the type of the reducer of the store.
-type Reducer[S State] func(prev S, cmd Msg) S
+type Reducer[S State] func(curr S, update Update) S
 
 // Store is the type of the store.
 type Store[S State] interface {
@@ -99,7 +102,7 @@ type store[S State] struct {
 	state       S
 	reducers    []Reducer[S]
 	subscribers []chan StateChange[S]
-	msgs        chan Msg
+	updates     chan Update
 	actions     chan Action
 	ctx         context.Context
 
@@ -112,11 +115,11 @@ func New[S State](ctx context.Context, initialState S, reducers ...Reducer[S]) S
 	s.ctx = ctx
 	s.state = initialState
 	s.actions = make(chan Action)
-	s.msgs = make(chan Msg)
+	s.updates = make(chan Update)
 	s.reducers = slices.Append(reducers, s.reducers...)
 
 	s.handleActions(s.actions)
-	s.handleMsgs(s.msgs)
+	s.handleUpdates(s.updates)
 
 	return s
 }
@@ -180,7 +183,7 @@ func (s *store[S]) Dispose() {
 	}
 }
 
-func (s *store[S]) handleMsgs(msgs chan Msg) chan struct{} {
+func (s *store[S]) handleUpdates(updates chan Update) chan struct{} {
 	ch := make(chan struct{})
 
 	go func() {
@@ -190,15 +193,15 @@ func (s *store[S]) handleMsgs(msgs chan Msg) chan struct{} {
 			select {
 			case <-s.ctx.Done():
 				return
-			case msg := <-msgs:
-				if msg == nil {
+			case update := <-updates:
+				if utilx.Empty(update) {
 					continue
 				}
 
 				prev := s.state
 
 				for _, reducer := range s.reducers {
-					s.state = reducer(s.state, msg)
+					s.state = reducer(s.state, update)
 				}
 
 				for _, sub := range s.subscribers {
@@ -229,8 +232,8 @@ func (s *store[S]) handleActions(actions chan Action) chan struct{} {
 					continue
 				}
 
-				msg := action()
-				s.msgs <- msg
+				update := action()
+				s.updates <- update
 			}
 		}
 	}()
