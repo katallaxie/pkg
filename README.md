@@ -89,8 +89,6 @@ This is a simple state management inspired by [Redux](https://redux.js.org/).
 // FootUpdate is a simple update.
 type FooUpdate struct {}
 
-var FooAction = red
-
 // NoopState is a simple state of a store.
 type NoopState struct {
 	Name string `json:"name"`
