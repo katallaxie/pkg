@@ -162,7 +162,7 @@ func (o *option[T]) Map(f func(T) T) Option[T] {
 	return Some(f(o.val))
 }
 
-// MapOr returns the result of the given function if the option is not empty,
+// MapOr returns the result of the given function if the option is not empty.
 func (o option[T]) MapOr(v T, f func(T) T) T {
 	if o.IsNone() {
 		return v
@@ -170,7 +170,7 @@ func (o option[T]) MapOr(v T, f func(T) T) T {
 	return f(o.val)
 }
 
-// MapOrElse returns the result of the given function if the option is not empty,
+// MapOrElse returns the result of the given function if the option is not empty.
 func (o option[T]) MapOrElse(def func() T, next func(T) T) T {
 	if o.IsNone() {
 		return def()

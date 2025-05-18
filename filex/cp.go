@@ -30,7 +30,7 @@ func CopyFile(src, dst string, mkdir bool) (int64, error) {
 		}
 	}
 
-	return copy(src, dst)
+	return copy2(src, dst)
 }
 
 // CopyEmbedFile ...
@@ -129,7 +129,7 @@ func PathTransform(path string, funcs ...Transformer) (string, error) {
 	return p, nil
 }
 
-func copy(src, dst string) (int64, error) {
+func copy2(src, dst string) (int64, error) {
 	sfi, err := os.Stat(src)
 	if err != nil {
 		return 0, err

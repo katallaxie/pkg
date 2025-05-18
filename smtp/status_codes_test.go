@@ -8,8 +8,6 @@ import (
 )
 
 func TestNewStatusCode(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
 		name         string
 		message      string

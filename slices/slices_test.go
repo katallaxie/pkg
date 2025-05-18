@@ -9,8 +9,6 @@ import (
 )
 
 func TestAny(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
 		name      string
 		predicate func(v int) bool
@@ -40,8 +38,6 @@ func TestAny(t *testing.T) {
 }
 
 func TestLimit(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
 		name     string
 		limit    int
@@ -65,8 +61,6 @@ func TestLimit(t *testing.T) {
 }
 
 func TestRange(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
 		name     string
 		from     int
@@ -90,8 +84,6 @@ func TestRange(t *testing.T) {
 }
 
 func TestMap(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
 		name     string
 		fn       func(v int) int
@@ -115,8 +107,6 @@ func TestMap(t *testing.T) {
 }
 
 func TestPop(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
 		name     string
 		input    []int
@@ -141,8 +131,6 @@ func TestPop(t *testing.T) {
 }
 
 func TestPush(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
 		name     string
 		el       int
@@ -166,8 +154,6 @@ func TestPush(t *testing.T) {
 }
 
 func TestCut(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
 		name     string
 		start    int
@@ -193,8 +179,6 @@ func TestCut(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
 		name     string
 		idx      int
@@ -218,8 +202,6 @@ func TestDelete(t *testing.T) {
 }
 
 func TestInsert(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
 		name     string
 		idx      int
@@ -245,8 +227,6 @@ func TestInsert(t *testing.T) {
 }
 
 func TestFilter(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
 		name     string
 		input    []int
@@ -270,8 +250,6 @@ func TestFilter(t *testing.T) {
 }
 
 func TestIn(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
 		name     string
 		el       int
@@ -301,8 +279,6 @@ func TestIn(t *testing.T) {
 }
 
 func TestIndex(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
 		name      string
 		predicate func(v int) bool
@@ -332,8 +308,6 @@ func TestIndex(t *testing.T) {
 }
 
 func TestLast(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
 		name     string
 		input    []int
@@ -355,8 +329,6 @@ func TestLast(t *testing.T) {
 }
 
 func TestUnique(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
 		name      string
 		input     []int
@@ -459,8 +431,6 @@ func TestAppend(t *testing.T) {
 }
 
 func TestForEach(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
 		name     string
 		input    []int
@@ -484,8 +454,6 @@ func TestForEach(t *testing.T) {
 }
 
 func TestFind(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
 		name     string
 		input    []int
@@ -516,8 +484,6 @@ func TestFind(t *testing.T) {
 }
 
 func TestFindIndex(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
 		name     string
 		input    []int

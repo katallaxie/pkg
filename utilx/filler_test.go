@@ -19,12 +19,12 @@ func (s *FillerSuite) TestFuncByNameIsEmpty(c *C) {
 
 	f := &Filler{
 		FuncByName: map[string]FillerFunc{
-			"Foo": func(field *FieldData) {
+			"Foo": func(_ *FieldData) {
 				calledA = true
 			},
 		},
 		FuncByKind: map[reflect.Kind]FillerFunc{
-			reflect.Int: func(field *FieldData) {
+			reflect.Int: func(_ *FieldData) {
 				calledB = true
 			},
 		},
@@ -42,12 +42,12 @@ func (s *FillerSuite) TestFuncByTypeIsEmpty(c *C) {
 	t := GetTypeHash(reflect.TypeOf(new(FixtureTypeInt)))
 	f := &Filler{
 		FuncByType: map[TypeHash]FillerFunc{
-			t: func(field *FieldData) {
+			t: func(_ *FieldData) {
 				calledA = true
 			},
 		},
 		FuncByKind: map[reflect.Kind]FillerFunc{
-			reflect.Int: func(field *FieldData) {
+			reflect.Int: func(_ *FieldData) {
 				calledB = true
 			},
 		},
@@ -61,7 +61,7 @@ func (s *FillerSuite) TestFuncByTypeIsEmpty(c *C) {
 func (s *FillerSuite) TestFuncByKindIsNotEmpty(c *C) {
 	called := false
 	f := &Filler{FuncByKind: map[reflect.Kind]FillerFunc{
-		reflect.Int: func(field *FieldData) {
+		reflect.Int: func(_ *FieldData) {
 			called = true
 		},
 	}}
@@ -70,8 +70,8 @@ func (s *FillerSuite) TestFuncByKindIsNotEmpty(c *C) {
 	c.Assert(called, Equals, false)
 }
 
-func (s *FillerSuite) TestFuncByKindSlice(c *C) {
-	fmt.Println(GetTypeHash(reflect.TypeOf(new([]string))))
+func (s *FillerSuite) TestFuncByKindSlice(_ *C) {
+	fmt.Println(GetTypeHash(reflect.TypeOf(new([]string)))) // nolint:forbidigo
 }
 
 func (s *FillerSuite) TestFuncByKindTag(c *C) {
@@ -91,7 +91,7 @@ func (s *FillerSuite) TestFuncByKindTag(c *C) {
 func (s *FillerSuite) TestFuncByKindIsEmpty(c *C) {
 	called := false
 	f := &Filler{FuncByKind: map[reflect.Kind]FillerFunc{
-		reflect.Int: func(field *FieldData) {
+		reflect.Int: func(_ *FieldData) {
 			called = true
 		},
 	}}

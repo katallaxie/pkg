@@ -14,7 +14,7 @@ func ExampleNew() {
 		Name string
 	}
 
-	r := func(prev noopState, action redux.Update) noopState {
+	r := func(_ noopState, _ redux.Update) noopState {
 		return noopState{Name: "bar"}
 	}
 
@@ -45,8 +45,6 @@ func fooAction() redux.Action {
 }
 
 func TestNew(t *testing.T) {
-	t.Parallel()
-
 	noopState := struct{}{}
 
 	s := redux.New(t.Context(), noopState)
@@ -54,8 +52,6 @@ func TestNew(t *testing.T) {
 }
 
 func TestDispatch(t *testing.T) {
-	t.Parallel()
-
 	type noopState struct {
 		Text string
 	}

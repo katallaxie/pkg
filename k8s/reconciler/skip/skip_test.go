@@ -1,7 +1,6 @@
 package skip_test
 
 import (
-	"context"
 	"testing"
 
 	"github.com/katallaxie/pkg/k8s/reconciler/skip"
@@ -10,7 +9,7 @@ import (
 )
 
 func TestSkipEnableSkip(t *testing.T) {
-	ctx := context.Background()
+	ctx := t.Context()
 	ctx = skip.EnableSkip(ctx)
 	require.True(t, skip.Skip(ctx))
 }

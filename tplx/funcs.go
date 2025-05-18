@@ -8,17 +8,17 @@ var genericMap = map[string]interface{}{
 	"hello": func() string { return "Hello!" },
 }
 
-// FuncMap returns a 'text/template'.FuncMap
+// FuncMap returns a 'text/template'.FuncMap.
 func FuncMap() template.FuncMap {
 	return HtmlFuncMap()
 }
 
-// TxtFuncMap returns a 'text/template'.FuncMap
+// TxtFuncMap returns a 'text/template'.FuncMap.
 func TxtFuncMap() template.FuncMap {
 	return template.FuncMap(GenericFuncMap())
 }
 
-// HtmlFuncMap returns an 'html/template'.Funcmap
+// HtmlFuncMap returns an 'html/template'.Funcmap.
 func HtmlFuncMap() template.FuncMap {
 	return template.FuncMap(GenericFuncMap())
 }

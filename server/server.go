@@ -81,7 +81,7 @@ type Listener interface {
 
 type listeners map[Listener]bool
 
-// server holds the instance info of the server
+// server holds the instance info of the server.
 type server struct {
 	ctx    context.Context
 	cancel context.CancelFunc
@@ -191,7 +191,7 @@ OUTTER:
 	}
 }
 
-// SetLimit limits the number of active listeners in this server
+// SetLimit limits the number of active listeners in this server.
 func (s *server) SetLimit(n int) {
 	if n < 0 {
 		s.sem = nil

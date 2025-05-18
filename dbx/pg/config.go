@@ -27,7 +27,7 @@ func FromContext(ctx context.Context) *Config {
 	return ctx.Value(configKey).(*Config)
 }
 
-// Config represents configuration for PostgreSQL connection
+// Config represents configuration for PostgreSQL connection.
 type Config struct {
 	Database string `envconfig:"PG_DB_NAME"`
 	Host     string `envconfig:"PG_HOST"`
@@ -37,7 +37,7 @@ type Config struct {
 	User     string `envconfig:"PG_USER"`
 }
 
-// NewConfig returns a new Config instance
+// NewConfig returns a new Config instance.
 func NewConfig() *Config {
 	return &Config{
 		Port:    5432,
