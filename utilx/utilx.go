@@ -17,6 +17,11 @@ func Equal[T comparable](a, b T) bool {
 	return IfElse(Empty(a) && Empty(b), true, a == b)
 }
 
+// IsNil returns true of the given value is nil.
+func IsNil(value any) bool {
+	return value == nil
+}
+
 // And works similar to "&&" in other languages.
 func And[T comparable](a, b T) T {
 	var c T

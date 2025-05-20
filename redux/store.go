@@ -128,7 +128,7 @@ func New[S State](ctx context.Context, initialState S, reducers ...Reducer[S]) S
 func (s *store[S]) Dispatch(actions ...Action) {
 	go func() {
 		for _, action := range actions {
-			if action == nil {
+			if utilx.IsNil(action) {
 				continue
 			}
 
