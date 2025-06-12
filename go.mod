@@ -16,7 +16,7 @@ tool (
 replace github.com/google/ko => github.com/google/ko v0.15.1
 
 require (
-	firebase.google.com/go/v4 v4.16.0
+	firebase.google.com/go/v4 v4.16.1
 	github.com/creack/pty v1.1.24
 	github.com/fatih/color v1.18.0
 	github.com/gofiber/fiber/v2 v2.52.8
