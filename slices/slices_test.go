@@ -512,3 +512,27 @@ func TestFindIndex(t *testing.T) {
 		})
 	}
 }
+
+func TestKeyValue(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    map[string]int
+		expected []string
+	}{
+		{
+			name: "key-value pairs from map",
+			input: map[string]int{
+				"a": 1,
+				"b": 2,
+			},
+			expected: []string{"a=1", "b=2"},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := slices.KeyValue(tt.input)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}

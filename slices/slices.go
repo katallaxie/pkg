@@ -1,6 +1,8 @@
 package slices
 
 import (
+	"fmt"
+
 	"github.com/katallaxie/pkg/cast"
 )
 
@@ -210,4 +212,15 @@ func FindIndex[T any](fn func(v T) bool, slice ...T) (int, bool) {
 	}
 
 	return 0, false
+}
+
+// KeyValue returns a string slice of key-value pairs from a map.
+func KeyValue[K comparable, V any](m map[K]V) []string {
+	result := make([]string, 0, len(m))
+
+	for k, v := range m {
+		result = append(result, fmt.Sprintf("%v=%v", k, v))
+	}
+
+	return result
 }
