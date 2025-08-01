@@ -16,7 +16,7 @@ tool (
 replace github.com/google/ko => github.com/google/ko v0.15.1
 
 require (
-	firebase.google.com/go/v4 v4.17.0
+	firebase.google.com/go/v4 v4.18.0
 	github.com/creack/pty v1.1.24
 	github.com/fatih/color v1.18.0
 	github.com/gofiber/fiber/v2 v2.52.9
@@ -459,7 +459,7 @@ require (
 	gocloud.dev v0.40.0 // indirect
 	golang.org/x/exp v0.0.0-20241009180824-f66d83c29e7c // indirect
 	golang.org/x/exp/typeparams v0.0.0-20250210185358-939b2ce775ac // indirect
-	golang.org/x/net v0.41.0 // indirect
+	golang.org/x/net v0.42.0 // indirect
 	golang.org/x/oauth2 v0.30.0 // indirect
 	golang.org/x/sys v0.34.0 // indirect
 	golang.org/x/term v0.33.0 // indirect
