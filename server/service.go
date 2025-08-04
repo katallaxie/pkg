@@ -27,7 +27,6 @@ func init() {
 // Service is used to configure the service name.
 type service struct {
 	name string
-
 	sync.Once
 }
 

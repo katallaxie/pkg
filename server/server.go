@@ -12,7 +12,7 @@ import (
 )
 
 // ErrUnimplemented is returned when a listener is not implemented.
-var ErrUnimplemented = errors.New("server: unimplemented")
+var ErrUnimplemented = errors.New("unimplemented")
 
 type token struct{}
 
@@ -142,7 +142,6 @@ func (s *server) Wait() error {
 	defer signal.Reset(syscall.SIGINT, syscall.SIGTERM)
 
 OUTTER:
-	//
 	for l, ready := range s.listeners {
 		readyFunc := func() {
 			r := ready
@@ -199,7 +198,7 @@ func (s *server) SetLimit(n int) {
 	}
 
 	if len(s.sem) != 0 {
-		panic(fmt.Errorf("server: modify limit while %v listeners run", len(s.sem)))
+		panic(NewServerError(fmt.Errorf("modify limit while %v listeners run", len(s.sem))))
 	}
 
 	s.sem = make(chan token, n)

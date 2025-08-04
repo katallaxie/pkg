@@ -65,4 +65,7 @@ func TestNewError(t *testing.T) {
 	assert.Implements(t, (*error)(nil), err)
 	require.Error(t, err)
 	require.ErrorIs(t, err, ErrUnimplemented)
+	require.Equal(t, "server: unimplemented", err.Error())
+	require.NotNil(t, err.Unwrap())
+	require.Equal(t, ErrUnimplemented, err.Unwrap())
 }
