@@ -25,22 +25,22 @@ func Wrap[T any](v T, null bool) Option[T] {
 
 // Option is a value that represents the presence of a value or the absence of a value.
 type Option[T any] interface {
-	Value() T
-	IsNone() bool
-	IsSome() bool
-	Except(v any) T
-	Unwrap() T
-	UnwrapOr(v T) T
-	UnwrapOrElse(f func() T) T
 	And(v Option[T]) Option[T]
 	AndThen(f func(T) Option[T]) Option[T]
-	Or(v Option[T]) Option[T]
-	OrElse(next func() Option[T]) Option[T]
+	Except(v any) T
 	Filter(f func(T) bool) Option[T]
+	IsNone() bool
+	IsSome() bool
 	Map(f func(T) T) Option[T]
 	MapOr(v T, f func(T) T) T
 	MapOrElse(def func() T, next func(T) T) T
+	Or(v Option[T]) Option[T]
+	OrElse(next func() Option[T]) Option[T]
 	Replace(v T) Option[T]
+	Unwrap() T
+	UnwrapOr(v T) T
+	UnwrapOrElse(f func() T) T
+	Value() T
 }
 
 // option is a value that represents the presence of a value or the absence of a value.

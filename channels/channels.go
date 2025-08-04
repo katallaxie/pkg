@@ -1,8 +1,6 @@
 package channels
 
-import (
-	"sync"
-)
+import "sync"
 
 // Join joins multiple channels into one.
 func Join[T any](inputs ...<-chan T) <-chan T {

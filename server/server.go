@@ -32,7 +32,7 @@ type ServerError struct {
 // Error implements the error interface.
 func (s *ServerError) Error() string { return fmt.Sprintf("server: %s", s.Err) }
 
-// Unwrap ...
+// Unwrap implements the Unwrap method.
 func (s *ServerError) Unwrap() error { return s.Err }
 
 // NewServerError returns a new error.
@@ -51,12 +51,10 @@ func NewServerError(err error) *ServerError {
 //	}
 type Server interface {
 	// Run is running a new go routine
-	Listen(listener Listener, ready bool)
-
+	Listen(listener Listener, ready ...bool)
 	// Waits for the server to fail,
 	// or gracefully shutdown if context is canceled
 	Wait() error
-
 	// SetLimit ...
 	SetLimit(n int)
 }
@@ -64,7 +62,7 @@ type Server interface {
 // Unimplemented is the default implementation.
 type Unimplemented struct{}
 
-// Start ...
+// Start is the default implementation of the Listener interface.
 func (s *Unimplemented) Start(context.Context, ReadyFunc, RunFunc) func() error {
 	return func() error {
 		return ErrUnimplemented
@@ -79,9 +77,10 @@ type Listener interface {
 	Start(context.Context, ReadyFunc, RunFunc) func() error
 }
 
+var _ Server = (*server)(nil)
+
 type listeners map[Listener]bool
 
-// server holds the instance info of the server.
 type server struct {
 	ctx    context.Context
 	cancel context.CancelFunc
@@ -125,8 +124,14 @@ func newServer(ctx context.Context) *server {
 }
 
 // Listen is adding a listener to the server.
-func (s *server) Listen(listener Listener, ready bool) {
-	s.listeners[listener] = ready
+func (s *server) Listen(listener Listener, wait ...bool) {
+	waiting := false
+
+	if len(wait) > 0 {
+		waiting = wait[0]
+	}
+
+	s.listeners[listener] = waiting
 }
 
 // Wait is waiting for the server to shutdown or fail.
@@ -211,7 +216,7 @@ func (s *server) run(f func() error) {
 
 	s.wg.Add(1)
 
-	fn := func() {
+	runFunc := func() {
 		defer s.done()
 
 		if err := f(); err != nil {
@@ -224,7 +229,7 @@ func (s *server) run(f func() error) {
 		}
 	}
 
-	go fn()
+	go runFunc()
 }
 
 func (s *server) done() {
