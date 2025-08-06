@@ -477,11 +477,7 @@ func TestFailForEach(t *testing.T) {
 				return tt.expected
 			}, tt.input...)
 
-			if tt.expected == nil {
-				assert.NoError(t, err)
-			} else {
-				assert.Error(t, tt.expected, err)
-			}
+			assert.Equal(t, tt.expected, err)
 		})
 	}
 }

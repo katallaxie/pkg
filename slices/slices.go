@@ -195,7 +195,7 @@ func ForEach[T any](fn func(v T, i int), slice ...T) {
 // FailForEach applies a function to all elements in a slice and returns an error if the function returns false for any element.
 func FailForEach[T any](fn func(v T, i int) error, slice ...T) error {
 	for i, v := range slice {
-		if err := fn(v, i); utilx.Empty(err) {
+		if err := fn(v, i); utilx.NotEmpty(err) {
 			return err
 		}
 	}
