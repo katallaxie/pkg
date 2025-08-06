@@ -453,6 +453,39 @@ func TestForEach(t *testing.T) {
 	}
 }
 
+func TestFailForEach(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    []int
+		expected error
+	}{
+		{
+			name:     "do not fail for each element",
+			input:    []int{1, 2, 3},
+			expected: nil,
+		},
+		{
+			name:     "fail for each element with error",
+			input:    []int{1, 2, 3},
+			expected: assert.AnError,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := slices.FailForEach(func(v int, i int) error {
+				return tt.expected
+			}, tt.input...)
+
+			if tt.expected == nil {
+				assert.NoError(t, err)
+			} else {
+				assert.Error(t, tt.expected, err)
+			}
+		})
+	}
+}
+
 func TestFind(t *testing.T) {
 	tests := []struct {
 		name     string

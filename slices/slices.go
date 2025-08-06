@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/katallaxie/pkg/cast"
+	"github.com/katallaxie/pkg/utilx"
 )
 
 // Any checks if any element in a slice satisfies a predicate.
@@ -189,6 +190,17 @@ func ForEach[T any](fn func(v T, i int), slice ...T) {
 	for i, v := range slice {
 		fn(v, i)
 	}
+}
+
+// FailForEach applies a function to all elements in a slice and returns an error if the function returns false for any element.
+func FailForEach[T any](fn func(v T, i int) error, slice ...T) error {
+	for i, v := range slice {
+		if err := fn(v, i); utilx.Empty(err) {
+			return err
+		}
+	}
+
+	return nil
 }
 
 // Find returns the first element in a slice that satisfies a predicate.
