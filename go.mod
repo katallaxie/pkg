@@ -31,7 +31,7 @@ require (
 	golang.org/x/mod v0.28.0
 	golang.org/x/sync v0.17.0
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c
-	gorm.io/gorm v1.30.3
+	gorm.io/gorm v1.30.5
 	helm.sh/helm v2.17.0+incompatible
 	k8s.io/apimachinery v0.34.0
 	k8s.io/client-go v0.34.0
