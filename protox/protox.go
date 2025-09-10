@@ -10,13 +10,13 @@ import (
 var ErrUnimplemented = errors.New("method not implemented")
 
 // ToProto is an interface for types that can be converted to protobuf messages.
-type ToProto interface {
-	ToProto() (proto.Message, error)
+type ToProto[M any] interface {
+	ToProto() (*M, error)
 }
 
 // FromProto is an interface for types that can be populated from protobuf messages.
-type FromProto interface {
-	FromProto(ptr any) error
+type FromProto[P any] interface {
+	FromProto(ptr *P) error
 }
 
 // UnimplementedToProto is a struct that implements the ToProto interface with a default method.
@@ -36,9 +36,9 @@ func (u UnimplementedFromProto) FromProto(ptr any) error {
 }
 
 // ProtoX is an interface that combines ToProto and FromProto.
-type ProtoX interface {
-	ToProto
-	FromProto
+type ProtoX[P any] interface {
+	FromProto(*P) error
+	ToProto() (*P, error)
 }
 
 // UnimplementedProto is a struct that implements the Proto interface with default methods.
