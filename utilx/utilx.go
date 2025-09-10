@@ -22,6 +22,11 @@ func IsNil(value any) bool {
 	return value == nil
 }
 
+// NotNil returns true of the given value is not nil.
+func NotNil(value any) bool {
+	return !IsNil(value)
+}
+
 // And works similar to "&&" in other languages.
 func And[T comparable](a, b T) T {
 	var c T
