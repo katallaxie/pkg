@@ -103,6 +103,23 @@ func TestEqual(t *testing.T) {
 	}
 }
 
+func TestNotEqual(t *testing.T) {
+	tests := []struct {
+		a        int
+		b        int
+		expected bool
+	}{
+		{0, 0, false},
+		{1, 1, false},
+		{1, 2, true},
+	}
+
+	for _, test := range tests {
+		got := utilx.NotEqual(test.a, test.b)
+		require.Equal(t, test.expected, got)
+	}
+}
+
 func TestIsNil(t *testing.T) {
 	tests := []struct {
 		value    any

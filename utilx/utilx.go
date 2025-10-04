@@ -17,6 +17,11 @@ func Equal[T comparable](a, b T) bool {
 	return IfElse(Empty(a) && Empty(b), true, a == b)
 }
 
+// NotEqual returns true of the given values are not equal.
+func NotEqual[T comparable](a, b T) bool {
+	return !Equal(a, b)
+}
+
 // IsNil returns true of the given value is nil.
 func IsNil(value any) bool {
 	return value == nil
