@@ -37,6 +37,13 @@ func TestAny(t *testing.T) {
 	}
 }
 
+func BenchmarkAny(b *testing.B) {
+	slice := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+	for i := 0; i < b.N; i++ {
+		slices.Any(func(v int) bool { return v == 5 }, slice...)
+	}
+}
+
 func TestLimit(t *testing.T) {
 	tests := []struct {
 		name     string

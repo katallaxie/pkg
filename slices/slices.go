@@ -9,8 +9,8 @@ import (
 
 // Any checks if any element in a slice satisfies a predicate.
 func Any[T any](fn func(v T) bool, slice ...T) bool {
-	for _, v := range slice {
-		if fn(v) {
+	for i := 0; i < len(slice); i++ {
+		if fn(slice[i]) {
 			return true
 		}
 	}
@@ -30,6 +30,7 @@ func Limit[T any](limit int, slice ...T) []T {
 // Map applies a function to all elements in a slice.
 func Map[T1 any, T2 any](fn func(v T1) T2, slice ...T1) []T2 {
 	a := make([]T2, len(slice))
+
 	for i, v := range slice {
 		a[i] = fn(v)
 	}
@@ -51,8 +52,8 @@ func Range(from, to int) []int {
 func Slice[T any](slice []any) []T {
 	newslice := make([]T, 0, len(slice))
 
-	for _, el := range slice {
-		newslice = append(newslice, el.(T)) //nolint:forcetypeassert // We expect a panic, if something is wrong
+	for i := 0; i < len(slice); i++ {
+		newslice = append(newslice, slice[i].(T)) //nolint:forcetypeassert // We expect a panic, if something is wrong
 	}
 
 	return newslice
