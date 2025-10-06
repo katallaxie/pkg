@@ -9,6 +9,27 @@ import (
 	"gorm.io/gorm"
 )
 
+// DefaultLimits is a list of default limits.
+var DefaultLimits = []int{5, 10, 25, 50}
+
+// NewPaginated returns a new Paginated struct.
+func NewPaginated[T any]() *Paginated[T] {
+	return &Paginated[T]{
+		Limit:  10,
+		Offset: 0,
+		Sort:   SortDesc,
+	}
+}
+
+const (
+	// SortNone is the no sort order.
+	SortNone = ""
+	// SortAsc is the ascending sort order.
+	SortAsc = "asc"
+	// SortDesc is the descending sort order.
+	SortDesc = "desc"
+)
+
 // Paginated is a struct that contains the properties of a pagination.
 type Paginated[T any] struct {
 	// Limit is the number of items to return.
@@ -43,8 +64,8 @@ func (p *Paginated[T]) GetOffset() int {
 
 // GetSort returns the sort.
 func (p *Paginated[T]) GetSort() string {
-	if p.Sort == "" {
-		p.Sort = "desc"
+	if p.Sort == SortNone {
+		p.Sort = SortDesc
 	}
 
 	return p.Sort
@@ -70,6 +91,15 @@ func RowsPtr[T any](rows []T) []*T {
 	}
 
 	return rowsPtr
+}
+
+// NewResults returns a new Results struct.
+func NewResults[T any]() *Results[T] {
+	return &Results[T]{
+		Limit:  10,
+		Offset: 0,
+		Sort:   SortDesc,
+	}
 }
 
 // Results is a struct that contains the results of a query.
@@ -112,8 +142,8 @@ func (p *Results[T]) GetOffset() int {
 
 // GetSort returns the sort.
 func (p *Results[T]) GetSort() string {
-	if p.Sort == "" {
-		p.Sort = "desc"
+	if p.Sort == SortNone {
+		p.Sort = SortDesc
 	}
 
 	return p.Sort
@@ -152,19 +182,20 @@ func (p *Results[T]) GetLen() int {
 // PaginatedResults returns a function that paginates the results.
 func PaginatedResults[T any](value interface{}, pagination *Results[T], db *gorm.DB) func(db *gorm.DB) *gorm.DB {
 	var totalRows int64
-	db.Model(value).Scopes(searchScope(pagination)).Count(&totalRows).Where("deleted_at IS NULL")
+	db.Model(value).Scopes(SearchScope(pagination)).Count(&totalRows).Where("deleted_at IS NULL")
 
 	pagination.TotalRows = int(totalRows)
 	totalPages := int(math.Ceil(float64(totalRows) / float64(pagination.Limit)))
 	pagination.TotalPages = totalPages
 
 	return func(db *gorm.DB) *gorm.DB {
-		db = db.Scopes(searchScope(pagination))
+		db = db.Scopes(SearchScope(pagination))
 		return db.Offset(pagination.GetOffset()).Limit(pagination.GetLimit())
 	}
 }
 
-func searchScope[T any](pagination *Results[T]) func(db *gorm.DB) *gorm.DB {
+// SearchScope is a function that returns a scope that searches the given fields.
+func SearchScope[T any](pagination *Results[T]) func(db *gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
 		if utilx.Empty(pagination.GetSearch()) {
 			return db
