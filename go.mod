@@ -18,7 +18,7 @@ require (
 	github.com/creack/pty v1.1.24
 	github.com/fatih/color v1.18.0
 	github.com/go-playground/validator/v10 v10.28.0
-	github.com/gofiber/fiber/v2 v2.52.9
+	github.com/gofiber/fiber/v2 v2.52.10
 	github.com/gofiber/fiber/v3 v3.0.0-rc.3
 	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v5 v5.7.6
