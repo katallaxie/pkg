@@ -10,15 +10,15 @@ import (
 
 // Key ...
 type Key[Value any] struct {
-	name   *stringer[string]
-	defVal *Value
+	name *stringer[string]
+	val  *Value
 }
 
 // New ...
-func New[Value any](name string, defaultValue Value) Key[Value] {
+func New[Value any](name string, v Value) Key[Value] {
 	key := Key[Value]{}
-	key.name.v = name
-	key.defVal = cast.Ptr(cast.Zero[Value]())
+	key.name = &stringer[string]{name}
+	key.val = cast.Ptr(v)
 
 	return key
 }
@@ -41,8 +41,8 @@ func (k Key[Value]) WithValue(parent context.Context, val Value) context.Context
 // ValueOk ...
 func (k Key[Value]) ValueOk(ctx context.Context) (v Value, ok bool) {
 	vv, ok := ctx.Value(k.contextKey()).(stringer[Value])
-	if !ok && k.defVal != nil {
-		vv.v = *k.defVal
+	if !ok && k.val != nil {
+		vv.v = *k.val
 	}
 
 	return vv.v, ok
