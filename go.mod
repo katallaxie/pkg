@@ -30,7 +30,7 @@ require (
 	golang.org/x/crypto v0.46.0
 	golang.org/x/mod v0.32.0
 	golang.org/x/sync v0.19.0
-	google.golang.org/protobuf v1.36.10
+	google.golang.org/protobuf v1.36.11
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c
 	gorm.io/gorm v1.31.1
 	helm.sh/helm v2.17.0+incompatible
