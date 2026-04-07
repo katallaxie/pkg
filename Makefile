@@ -11,6 +11,10 @@ GO_TEST 			?= $(GO_TOOL) gotest.tools/gotestsum --format pkgname
 build: ## Build the binary file.
 	$(GO_RELEASER) build --snapshot --clean
 
+.PHONY: release
+release: ## Release the project.
+	$(GO_RELEASER) release --clean
+
 .PHONY: generate
 generate: ## Generate code.
 	$(GO) generate ./...
