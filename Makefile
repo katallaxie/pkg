@@ -2,13 +2,10 @@
 
 # Go variables
 GO 					?= go
+GO_RELEASER 		?= $(GO_TOOL) github.com/goreleaser/goreleaser
+GO_LINT 			?= $(GO_TOOL) github.com/golangci/golangci-lint/v2/cmd/golangci-lint
 GO_TOOL 			?= $(GO) tool
 GO_TEST 			?= $(GO_TOOL) gotest.tools/gotestsum --format pkgname
-GO_RELEASER 		?= $(GO_TOOL) github.com/goreleaser/goreleaser
-
-.PHONY: release
-release: ## Release the project.
-	$(GO_RELEASER) release --clean
 
 .PHONY: build
 build: ## Build the binary file.
@@ -20,7 +17,7 @@ generate: ## Generate code.
 
 .PHONY: mocks
 mocks: ## Generate mocks.
-	$(GO_TOOL) mockery
+	$(GO_TOOL) github.com/vektra/mockery/v2
 
 .PHONY: fmt
 fmt: ## Run go fmt against code.
@@ -37,7 +34,11 @@ test: fmt vet ## Run tests.
 
 .PHONY: lint
 lint: ## Run lint.
-	$(GO_TOOL) github.com/golangci/golangci-lint/v2/cmd/golangci-lint run --timeout 5m -c .golangci.yml
+	$(GO_LINT) run --timeout 5m -c .golangci.yml
+
+.PHONY: fix
+fix: ## Run lint auto-fixes.
+	$(GO_LINT) run --fix --timeout 5m -c .golangci.yml
 
 .PHONY: clean
 clean: ## Remove previous build.
