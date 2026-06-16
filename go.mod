@@ -90,7 +90,6 @@ require (
 	github.com/BurntSushi/toml v1.6.0 // indirect
 	github.com/ClickHouse/clickhouse-go-linter v1.2.0 // indirect
 	github.com/Djarvur/go-err113 v0.1.1 // indirect
-	github.com/GaijinEntertainment/go-exhaustruct/v3 v3.3.1 // indirect
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/detectors/gcp v1.32.0 // indirect
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric v0.56.0 // indirect
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/internal/resourcemapping v0.56.0 // indirect
@@ -112,9 +111,7 @@ require (
 	github.com/alingse/nilnesserr v0.2.0 // indirect
 	github.com/andybalholm/brotli v1.2.1 // indirect
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2 // indirect
-	github.com/ashanbrown/forbidigo v1.6.0 // indirect
 	github.com/ashanbrown/forbidigo/v2 v2.3.1 // indirect
-	github.com/ashanbrown/makezero v1.2.0 // indirect
 	github.com/ashanbrown/makezero/v2 v2.2.1 // indirect
 	github.com/atc0005/go-teams-notify/v2 v2.13.0 // indirect
 	github.com/aws/aws-sdk-go v1.55.6 // indirect
@@ -178,7 +175,6 @@ require (
 	github.com/charmbracelet/x/term v0.2.2 // indirect
 	github.com/charmbracelet/x/termios v0.1.1 // indirect
 	github.com/charmbracelet/x/windows v0.2.2 // indirect
-	github.com/chavacava/garif v0.1.0 // indirect
 	github.com/chigopher/pathlib v0.19.1 // indirect
 	github.com/chrismellard/docker-credential-acr-env v0.0.0-20230304212654-82a0ddb27589 // indirect
 	github.com/ckaznocha/intrange v0.3.1 // indirect
@@ -321,7 +317,6 @@ require (
 	github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99 // indirect
 	github.com/jedisct1/go-minisign v0.0.0-20230811132847-661be99b8267 // indirect
 	github.com/jgautheron/goconst v1.10.0 // indirect
-	github.com/jingyugao/rowserrcheck v1.1.1 // indirect
 	github.com/jinzhu/copier v0.4.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
@@ -384,7 +379,6 @@ require (
 	github.com/nishanths/predeclared v0.2.2 // indirect
 	github.com/nunnatsa/ginkgolinter v0.23.0 // indirect
 	github.com/oklog/ulid v1.3.1 // indirect
-	github.com/olekukonko/tablewriter v0.0.5 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.1.0 // indirect
 	github.com/ory/dockertest/v3 v3.11.0 // indirect
@@ -396,7 +390,6 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/planetscale/vtprotobuf v0.6.1-0.20240319094008-0393e58bdf10 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
-	github.com/polyfloyd/go-errorlint v1.8.0 // indirect
 	github.com/prometheus/client_golang v1.23.2 // indirect
 	github.com/prometheus/client_model v0.6.2 // indirect
 	github.com/prometheus/common v0.67.5 // indirect
@@ -443,7 +436,6 @@ require (
 	github.com/stbenjam/no-sprintf-host-port v0.3.1 // indirect
 	github.com/stretchr/objx v0.5.2 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
-	github.com/tdakkota/asciicheck v0.4.1 // indirect
 	github.com/technoweenie/multipartstreamer v1.0.1 // indirect
 	github.com/tetafro/godot v1.5.6 // indirect
 	github.com/theupdateframework/go-tuf v0.7.0 // indirect
@@ -496,13 +488,8 @@ require (
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	gocloud.dev v0.40.0 // indirect
 	golang.org/x/exp v0.0.0-20251219203646-944ab1f22d93 // indirect
-<<<<<<< HEAD
-	golang.org/x/exp/typeparams v0.0.0-20250210185358-939b2ce775ac // indirect
-	golang.org/x/net v0.55.0 // indirect
-=======
 	golang.org/x/exp/typeparams v0.0.0-20260209203927-2842357ff358 // indirect
-	golang.org/x/net v0.54.0 // indirect
->>>>>>> b53b9ea (feat: duplex state machine)
+	golang.org/x/net v0.55.0 // indirect
 	golang.org/x/oauth2 v0.36.0 // indirect
 	golang.org/x/sys v0.46.0 // indirect
 	golang.org/x/term v0.44.0 // indirect
@@ -522,13 +509,8 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	gotest.tools/gotestsum v1.12.1 // indirect
-<<<<<<< HEAD
-	honnef.co/go/tools v0.6.1 // indirect
-	k8s.io/api v0.36.2 // indirect
-=======
 	honnef.co/go/tools v0.7.0 // indirect
-	k8s.io/api v0.36.1 // indirect
->>>>>>> b53b9ea (feat: duplex state machine)
+	k8s.io/api v0.36.2 // indirect
 	k8s.io/helm v2.17.0+incompatible // indirect
 	k8s.io/klog/v2 v2.140.0 // indirect
 	k8s.io/kube-openapi v0.0.0-20260317180543-43fb72c5454a // indirect
