@@ -14,7 +14,7 @@ tool (
 replace github.com/google/ko => github.com/google/ko v0.15.1
 
 require (
-	charm.land/bubbletea/v2 v2.0.9
+	charm.land/bubbletea/v2 v2.0.10
 	firebase.google.com/go/v4 v4.22.0
 	github.com/creack/pty v1.1.24
 	github.com/fatih/color v1.19.0
