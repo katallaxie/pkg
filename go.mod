@@ -22,7 +22,7 @@ require (
 	github.com/gofiber/fiber/v2 v2.52.16
 	github.com/gofiber/fiber/v3 v3.7.0
 	github.com/google/uuid v1.6.0
-	github.com/jackc/pgx/v5 v5.12.0
+	github.com/jackc/pgx/v5 v5.13.0
 	github.com/openfga/go-sdk v0.8.4
 	github.com/spf13/cobra v1.10.2
 	github.com/spf13/pflag v1.1.0
